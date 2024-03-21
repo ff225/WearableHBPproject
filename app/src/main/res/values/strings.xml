@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Tesi Android Health Connect</string>
+  <string name="menu">menu</string>
+  <string name="welcome_screen">Dashboard</string>
+  <string name="welcome_message">Benvenuti alla tesi su Android Health Connect!</string>
+  <string name="health_connect_logo">Health Connect logo</string>
+  <string name="installed_welcome_message">"Health Connect è installato correttamente sul dispositivo, naviga il menu laterale per esplorare tutte le funzionalità.    "</string>
+  <string name="privacy_policy">Privacy policy</string>
+  <string name="privacy_policy_description">
+        This is a placeholder example. Your app should display an appropriate privacy policy for how
+        you will handle and use Health Connect data. This sample app does not store or transmit any
+        data outside of Health Connect.
+    </string>
+  <string name="not_installed_tag">not_installed_tag</string>
+  <string name="market_url">market://details</string>
+  <string name="health_connect_package">com.google.android.apps.healthdata</string>
+  <string name="onboarding_url">healthconnect://onboarding</string>
+  <string name="not_installed_description">Health Connect è supportato su questo dispositivo, ma non è attualmente installato.</string>
+  <string name="not_installed_link_text">"Per utilizzare l'applicazione è necessario installare Health Connect, visita il Google Play per installarlo.  "</string>
+  <string name="not_supported_tag">not_supported_tag</string>
+  <string name="not_supported_url">https://developer.android.com/health-connect</string>
+  <string name="not_supported_description">Health Connect è supportato solo su dispositivi con Android API %1$d o superiore</string>
+  <string name="permissions_button_label">Richiesta permessi</string>
+  <string name="not_available_abbrev">N/A</string>
+  <string name="delete_button">Elimina</string>
+  <string name="total_steps">Passi totali</string>
+  <string name="total_distance">Distanza totale</string>
+  <string name="total_energy">Calorie totali</string>
+  <string name="min_label">Min</string>
+  <string name="max_label">Max</string>
+  <string name="avg_label">Avg</string>
+  <string name="label_and_value">%1$s: %2$s</string>
+  <string-array name="bp_posizioni_misurazione">
+    <item>Posizione non riconosciuta</item>
+    <item>Polso sinistro</item>
+    <item>Polso destro</item>
+    <item>Bicipite sinistro</item>
+    <item>Bicipite destro</item>
+  </string-array>
+  <string-array name="bp_posizioni_corpo">
+    <item>Posizione non riconosciuta</item>
+    <item>In piedi</item>
+    <item>Seduto</item>
+    <item>Steso</item>
+    <item>Reclinato</item>
+  </string-array>
+  <string name="add_readings_button">Aggiungi</string>
+  <string name="settings">Impostazioni Health Connect</string>
+  <string name="read_blood_pressure">Elenco misurazioni</string>
+  <string name="blood_pressure_detail">Dettaglio misurazione</string>
+  <string name="bp_systolic">Sistolico</string>
+  <string name="bp_diastolic">Diastolico</string>
+  <string name="bp_posizione_misurazione">Posizione misurazione</string>
+  <string name="bp_posizione_corpo">Posizione corpo</string>
+  <string name="bp_detail_title">Dettaglio pressione arteriosa</string>
+  <string name="bp_detail_hr_title">Battito cardiaco</string>
+  <string name="bp_detail_hr_start">Inizio</string>
+  <string name="bp_detail_hr_end">Fine</string>
+  <string name="bp_detail_hr_bpm_avg">BPM medio</string>
+  <string name="bp_detail_hr_bpm_max">BPM massimo</string>
+  <string name="bp_detail_hr_bpm_min">BPM minimo</string>
+  <string name="bp_detail_hr_meas_count">Numero misurazioni</string>
+</resources>
