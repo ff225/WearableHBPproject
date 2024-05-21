@@ -20,9 +20,9 @@ import androidx.health.connect.client.units.Pressure
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.data.BodyPositionType
 import it.unibo.alessiociarrocchi.tesiahc.data.MeasurementLocationType
-import it.unibo.alessiociarrocchi.tesiahc.formatInstantToDateTime
 import it.unibo.alessiociarrocchi.tesiahc.presentation.theme.HealthConnectTheme
 import java.time.Instant
+import java.time.ZoneOffset
 import java.util.UUID
 
 /**
@@ -34,8 +34,9 @@ fun BloodPressureDetail(
   systolic: Pressure,
   diastolic: Pressure,
   time: Instant,
-  bodyPosition: Int,
-  measurementLocation: Int,
+  zoneoffset: ZoneOffset?,
+  //bodyPosition: Int,
+  //measurementLocation: Int,
 ) {
   Row(
     modifier = Modifier
@@ -57,13 +58,13 @@ fun BloodPressureDetail(
       )
       Text(
         color = MaterialTheme.colors.secondary,
-        text = formatInstantToDateTime(time),
+        text = it.unibo.alessiociarrocchi.tesiahc.localDateTimeToString(it.unibo.alessiociarrocchi.tesiahc.convertLongToDate(time, zoneoffset!!.totalSeconds)),
         style = MaterialTheme.typography.caption
       )
       Text(stringResource(id = R.string.bp_systolic) + ": " + systolic.inMillimetersOfMercury.toString() + " mmHg")
       Text(stringResource(id = R.string.bp_diastolic) + ": " + diastolic.inMillimetersOfMercury.toString() + " mmHg")
-      Text(stringResource(id = R.string.bp_posizione_misurazione) + ": " + stringArrayResource(id=R.array.bp_posizioni_misurazione)[measurementLocation])
-      Text(stringResource(id = R.string.bp_posizione_corpo) + ": " + stringArrayResource(id=R.array.bp_posizioni_corpo)[bodyPosition])
+      //Text(stringResource(id = R.string.bp_posizione_misurazione) + ": " + stringArrayResource(id=R.array.bp_posizioni_misurazione)[measurementLocation])
+      //Text(stringResource(id = R.string.bp_posizione_corpo) + ": " + stringArrayResource(id=R.array.bp_posizioni_corpo)[bodyPosition])
     }
   }
 }
@@ -77,8 +78,9 @@ fun BloodPressureDetailPreview() {
       Pressure.millimetersOfMercury(120.0),
       Pressure.millimetersOfMercury(80.0),
       Instant.now(),
-      BodyPositionType.BODY_POSITION_SITTING_DOWN.ordinal,
-      MeasurementLocationType.MEASUREMENT_LOCATION_LEFT_WRIST.ordinal,
+      null,
+      //BodyPositionType.BODY_POSITION_SITTING_DOWN.ordinal,
+      //MeasurementLocationType.MEASUREMENT_LOCATION_LEFT_WRIST.ordinal,
     )
   }
 }

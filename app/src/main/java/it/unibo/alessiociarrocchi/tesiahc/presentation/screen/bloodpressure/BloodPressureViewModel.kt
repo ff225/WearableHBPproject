@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlinx.coroutines.launch
 
-class BloodPressureViewModel(private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectManager) :
+class BloodPressureViewModel(private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager) :
     ViewModel() {
     val permissions = setOf(
         HealthPermission.getWritePermission(BloodPressureRecord::class),
@@ -107,7 +107,7 @@ class BloodPressureViewModel(private val healthConnectManager: it.unibo.alessioc
 }
 
 class BloodPressureViewModelFactory(
-    private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectManager,
+    private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(BloodPressureViewModel::class.java)) {

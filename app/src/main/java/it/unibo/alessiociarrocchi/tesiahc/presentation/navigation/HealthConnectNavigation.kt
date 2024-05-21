@@ -17,15 +17,16 @@ import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetai
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailViewModel
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailViewModelFactory
 import it.unibo.alessiociarrocchi.tesiahc.showExceptionSnackbar
+import androidx.compose.ui.platform.LocalContext
 
 /**
  * Provides the navigation in the app.
  */
 @Composable
 fun HealthConnectNavigation(
-  navController: NavHostController,
-  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectManager,
-  scaffoldState: ScaffoldState,
+    navController: NavHostController,
+    healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
+    scaffoldState: ScaffoldState,
 ) {
   val scope = rememberCoroutineScope()
   NavHost(navController = navController, startDestination = Screen.WelcomeScreen.route) {

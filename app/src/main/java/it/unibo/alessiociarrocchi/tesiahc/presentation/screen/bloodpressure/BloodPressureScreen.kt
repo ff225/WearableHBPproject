@@ -92,6 +92,7 @@ fun BloodPressureScreen(
                 items(bpList) { bpRead ->
                     BloodPressureRow(
                         bpRead.time,
+                        bpRead.zoneOffset,
                         bpRead.systolic,
                         bpRead.diastolic,
                         bpRead.metadata.id,

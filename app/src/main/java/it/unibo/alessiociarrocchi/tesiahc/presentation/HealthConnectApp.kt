@@ -28,7 +28,7 @@ const val TAG = "Tesi Android Health Connect"
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HealthConnectApp(healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectManager) {
+fun HealthConnectApp(healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager) {
   HealthConnectTheme {
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()

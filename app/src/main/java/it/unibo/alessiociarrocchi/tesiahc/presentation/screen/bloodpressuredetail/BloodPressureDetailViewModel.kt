@@ -11,7 +11,8 @@ import androidx.health.connect.client.records.HeartRateRecord
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import it.unibo.alessiociarrocchi.tesiahc.data.HeartRateAggregateData
+import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
+import it.unibo.alessiociarrocchi.tesiahc.instantToLong
 import java.io.IOException
 import java.util.UUID
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ import java.time.temporal.ChronoUnit
 
 class BloodPressureDetailViewModel(
   private val uid: String,
-  private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectManager,
+  private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
 ) : ViewModel() {
   val permissions = setOf(
     HealthPermission.getReadPermission(BloodPressureRecord::class),
@@ -32,7 +33,7 @@ class BloodPressureDetailViewModel(
   var bpDetail: MutableState<BloodPressureRecord?> = mutableStateOf(null)
     private set
 
-  var hrAggregate: MutableState<HeartRateAggregateData?> = mutableStateOf(null)
+  var hrAggregate: MutableState<MyHeartRateAggregateEntity?> = mutableStateOf(null)
     private set
 
   //var hrList: MutableState<List<HeartRateRecord>> = mutableStateOf(listOf())
@@ -59,8 +60,13 @@ class BloodPressureDetailViewModel(
         val hrMIN = healthConnectManager.aggregateBPM_Min(hrStart, hrEnd)
         val hrMAX = healthConnectManager.aggregateBPM_Max(hrStart, hrEnd)
         val hrMC = healthConnectManager.aggregateMeasurements_Count(hrStart, hrEnd)
-        hrAggregate.value = HeartRateAggregateData(
-          hrStart, hrEnd, hrAVG, hrMIN, hrMAX, hrMC
+        hrAggregate.value = MyHeartRateAggregateEntity(
+          0,
+          0,
+          instantToLong(hrStart),
+          instantToLong(hrEnd),
+          bpDetail.value!!.zoneOffset!!.totalSeconds,
+          hrAVG, hrMIN, hrMAX, hrMC
         )
       }
     }
@@ -106,7 +112,7 @@ class BloodPressureDetailViewModel(
 
 class BloodPressureDetailViewModelFactory(
   private val uid: String,
-  private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectManager,
+  private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
 ) : ViewModelProvider.Factory {
   override fun <T : ViewModel> create(modelClass: Class<T>): T {
     if (modelClass.isAssignableFrom(BloodPressureDetailViewModel::class.java)) {

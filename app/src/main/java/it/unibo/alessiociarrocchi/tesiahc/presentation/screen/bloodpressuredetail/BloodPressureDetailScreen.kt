@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.health.connect.client.records.BloodPressureRecord
 import it.unibo.alessiociarrocchi.tesiahc.R
-import it.unibo.alessiociarrocchi.tesiahc.data.HeartRateAggregateData
+import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
 import java.util.UUID
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail_HeartRate
@@ -28,7 +28,7 @@ fun BloodPressureDetailScreen(
   permissions: Set<String>,
   permissionsGranted: Boolean,
   myBP: BloodPressureRecord?,
-  hrAggregate: HeartRateAggregateData?,
+  hrAggregate: MyHeartRateAggregateEntity?,
   uiState: BloodPressureDetailViewModel.UiState,
   onError: (Throwable?) -> Unit = {},
   onPermissionsResult: () -> Unit = {},
@@ -38,7 +38,6 @@ fun BloodPressureDetailScreen(
   // Remember the last error ID, such that it is possible to avoid re-launching the error
   // notification for the same error when the screen is recomposed, or configuration changes etc.
   val errorId = rememberSaveable { mutableStateOf(UUID.randomUUID()) }
-  val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectManager
 
   LaunchedEffect(uiState) {
     // If the initial data load has not taken place, attempt to load the data.
@@ -76,8 +75,9 @@ fun BloodPressureDetailScreen(
           myBP.systolic,
           myBP.diastolic,
           myBP.time,
-          myBP.bodyPosition,
-          myBP.measurementLocation,
+          myBP.zoneOffset,
+          //myBP.bodyPosition,
+          //myBP.measurementLocation,
         )
         BloodPressureDetail_HeartRate(
           hrAggregate!!

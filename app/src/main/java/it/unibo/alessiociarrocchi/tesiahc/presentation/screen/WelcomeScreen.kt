@@ -1,5 +1,7 @@
 package it.unibo.alessiociarrocchi.tesiahc.presentation.screen
 
+import android.content.ContextWrapper
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +32,7 @@ import it.unibo.alessiociarrocchi.tesiahc.presentation.component.InstalledMessag
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotSupportedMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.theme.HealthConnectTheme
+import it.unibo.alessiociarrocchi.tesiahc.services.LocationService
 
 /**
  * Welcome screen shown when the app is first launched.
@@ -85,38 +89,5 @@ fun WelcomeScreen(
       it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.NOT_INSTALLED -> NotInstalledMessage()
       it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.NOT_SUPPORTED -> NotSupportedMessage()
     }
-  }
-}
-
-@Preview
-@Composable
-fun InstalledMessagePreview() {
-  HealthConnectTheme {
-    WelcomeScreen(
-      healthConnectAvailability = it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.INSTALLED,
-      onResumeAvailabilityCheck = {}
-    )
-  }
-}
-
-@Preview
-@Composable
-fun NotInstalledMessagePreview() {
-  HealthConnectTheme {
-    WelcomeScreen(
-      healthConnectAvailability = it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.NOT_INSTALLED,
-      onResumeAvailabilityCheck = {}
-    )
-  }
-}
-
-@Preview
-@Composable
-fun NotSupportedMessagePreview() {
-  HealthConnectTheme {
-    WelcomeScreen(
-      healthConnectAvailability = it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.NOT_SUPPORTED,
-      onResumeAvailabilityCheck = {}
-    )
   }
 }

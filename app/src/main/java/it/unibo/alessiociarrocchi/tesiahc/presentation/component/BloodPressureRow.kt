@@ -19,8 +19,8 @@ import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.units.Pressure
 import java.time.Instant
 import java.util.UUID
-import it.unibo.alessiociarrocchi.tesiahc.formatInstantToDateTime
 import it.unibo.alessiociarrocchi.tesiahc.R
+import java.time.ZoneOffset
 
 /**
  * Creates a row to represent an [BloodPressureRecord]
@@ -28,6 +28,7 @@ import it.unibo.alessiociarrocchi.tesiahc.R
 @Composable
 fun BloodPressureRow(
   time: Instant,
+  zone_offset: ZoneOffset?,
   systolic: Pressure,
   diastolic: Pressure,
   uid: String,
@@ -54,7 +55,7 @@ fun BloodPressureRow(
       )*/
       Text(
         color = MaterialTheme.colors.primary,
-        text = formatInstantToDateTime(time),
+        text = it.unibo.alessiociarrocchi.tesiahc.localDateTimeToString(it.unibo.alessiociarrocchi.tesiahc.convertLongToDate(time, zone_offset!!.totalSeconds)),
         style = MaterialTheme.typography.caption
       )
       Text(stringResource(id=R.string.bp_systolic) + ": " + systolic.inMillimetersOfMercury.toString() + " mmHg")
@@ -69,6 +70,7 @@ fun BloodPressureRowPreview() {
   HealthConnectTheme {
     BloodPressureRow(
       Instant.now(),
+      null,
       Pressure.millimetersOfMercury(120.0),
       Pressure.millimetersOfMercury(80.0),
       UUID.randomUUID().toString()
