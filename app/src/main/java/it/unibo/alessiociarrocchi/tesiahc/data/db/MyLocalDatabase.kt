@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 private const val DATABASE_NAME = "tesiahc-database"
 
@@ -15,9 +16,11 @@ private const val DATABASE_NAME = "tesiahc-database"
     ],
     version = 1,
     exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class MyLocalDatabase : RoomDatabase() {
 
     abstract fun bpDao(): MyBloodPressureDao
+    abstract fun bpHRDao(): MyHeartRateAggregateDao
     abstract fun locationDao(): MyLocationDao
 
     companion object {
@@ -31,6 +34,7 @@ abstract class MyLocalDatabase : RoomDatabase() {
                     context,
                     MyLocalDatabase::class.java,
                     DATABASE_NAME)
+                    .allowMainThreadQueries()
                     .build().also { Instance = it }
             }
         }

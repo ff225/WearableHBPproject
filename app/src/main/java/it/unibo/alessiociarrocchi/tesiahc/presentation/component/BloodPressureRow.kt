@@ -14,13 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import it.unibo.alessiociarrocchi.tesiahc.presentation.theme.HealthConnectTheme
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.units.Pressure
-import java.time.Instant
-import java.util.UUID
 import it.unibo.alessiociarrocchi.tesiahc.R
+import it.unibo.alessiociarrocchi.tesiahc.presentation.theme.HealthConnectTheme
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
+import java.util.UUID
+
 
 /**
  * Creates a row to represent an [BloodPressureRecord]
@@ -28,7 +31,7 @@ import java.time.ZoneOffset
 @Composable
 fun BloodPressureRow(
   time: Instant,
-  zone_offset: ZoneOffset?,
+  zoneOffset: ZoneOffset?,
   systolic: Pressure,
   diastolic: Pressure,
   uid: String,
@@ -45,8 +48,8 @@ fun BloodPressureRow(
       modifier = Modifier
         .fillMaxWidth()
         .clickable {
-        onDetailsClick(uid)
-      }
+          onDetailsClick(uid)
+        }
     ) {
       /*Text(
         color = MaterialTheme.colors.primary,
@@ -55,25 +58,11 @@ fun BloodPressureRow(
       )*/
       Text(
         color = MaterialTheme.colors.primary,
-        text = it.unibo.alessiociarrocchi.tesiahc.localDateTimeToString(it.unibo.alessiociarrocchi.tesiahc.convertLongToDate(time, zone_offset!!.totalSeconds)),
+        text = it.unibo.alessiociarrocchi.tesiahc.localDateTimeToString(it.unibo.alessiociarrocchi.tesiahc.convertLongToDate(time, zoneOffset!!.totalSeconds)),
         style = MaterialTheme.typography.caption
       )
       Text(stringResource(id=R.string.bp_systolic) + ": " + systolic.inMillimetersOfMercury.toString() + " mmHg")
       Text(stringResource(id=R.string.bp_diastolic) + ": " + diastolic.inMillimetersOfMercury.toString() + " mmHg")
     }
-  }
-}
-
-@Preview
-@Composable
-fun BloodPressureRowPreview() {
-  HealthConnectTheme {
-    BloodPressureRow(
-      Instant.now(),
-      null,
-      Pressure.millimetersOfMercury(120.0),
-      Pressure.millimetersOfMercury(80.0),
-      UUID.randomUUID().toString()
-    )
   }
 }

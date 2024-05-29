@@ -1,19 +1,17 @@
 package it.unibo.alessiociarrocchi.tesiahc.data
 
 import android.content.Context
-import androidx.annotation.MainThread
-import androidx.lifecycle.LiveData
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocalDatabase
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
-import java.util.UUID
 import java.util.concurrent.ExecutorService
 
 /**
  * Access point for database (MyLocation data) and location APIs (start/stop location updates and
  * checking location update status).
  */
-class LocationRepository private constructor(
+class MyLocationRepository private constructor(
     private val myLocationDatabase: MyLocalDatabase,
+    private val myLocationManager: MyLocationManager,
     private val executor: ExecutorService
 ) {
 
@@ -23,13 +21,19 @@ class LocationRepository private constructor(
     /**
      * Returns all recorded locations from database.
      */
-    fun getLocations(): LiveData<List<MyLocationEntity>> = locationDao.getLocations()
+    fun getLocations(): List<MyLocationEntity> = locationDao.getLocations()
+
+    //TODO locations filtrate per data
 
     // Not being used now but could in future versions.
     /**
      * Returns specific location in database.
      */
-    fun getLocation(id: Int): LiveData<MyLocationEntity> = locationDao.getLocation(id)
+    fun getLocation(id: Int): MyLocationEntity = locationDao.getLocation(id)
+
+    fun deleteLocation(id: Int){
+        locationDao.deleteLocation(id)
+    }
 
     // Not being used now but could in future versions.
     /**
@@ -56,6 +60,20 @@ class LocationRepository private constructor(
     fun addLocations(myLocationEntities: List<MyLocationEntity>) {
         executor.execute {
             locationDao.addLocations(myLocationEntities)
+        }
+    }
+
+    companion object {
+        @Volatile private var INSTANCE: MyLocationRepository? = null
+
+        fun getInstance(context: Context, executor: ExecutorService): MyLocationRepository {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: MyLocationRepository(
+                    MyLocalDatabase.getDatabase(context),
+                    MyLocationManager.getInstance(context),
+                    executor)
+                    .also { INSTANCE = it }
+            }
         }
     }
 

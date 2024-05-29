@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import it.unibo.alessiociarrocchi.tesiahc.R
+import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.presentation.navigation.Drawer
 import it.unibo.alessiociarrocchi.tesiahc.presentation.navigation.HealthConnectNavigation
 import it.unibo.alessiociarrocchi.tesiahc.presentation.navigation.Screen
@@ -28,7 +29,10 @@ const val TAG = "Tesi Android Health Connect"
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HealthConnectApp(healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager) {
+fun HealthConnectApp(
+  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
+  locationRepository: MyLocationRepository
+) {
   HealthConnectTheme {
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
@@ -83,7 +87,8 @@ fun HealthConnectApp(healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.da
       HealthConnectNavigation(
         healthConnectManager = healthConnectManager,
         navController = navController,
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+        myLocationRepository = locationRepository
       )
     }
   }

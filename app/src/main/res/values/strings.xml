@@ -61,4 +61,8 @@
   <string name="bp_detail_hr_bpm_max">BPM massimo</string>
   <string name="bp_detail_hr_bpm_min">BPM minimo</string>
   <string name="bp_detail_hr_meas_count">Numero misurazioni</string>
+  <string name="read_locations">Elenco posizioni GPS</string>
+  <string name="read_sleep">Elenco misurazioni del sonno</string>
+    <string name="latitudine">Latitudine</string>
+  <string name="longitudine">Longitudine</string>
 </resources>

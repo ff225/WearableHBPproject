@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class BloodPressureViewModel(private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager) :
     ViewModel() {
     val permissions = setOf(
-        HealthPermission.getWritePermission(BloodPressureRecord::class),
+        //HealthPermission.getWritePermission(BloodPressureRecord::class),
         HealthPermission.getReadPermission(BloodPressureRecord::class)
     )
 

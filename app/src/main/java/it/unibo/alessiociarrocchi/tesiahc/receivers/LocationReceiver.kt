@@ -16,8 +16,7 @@ class LocationReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 
         val myIntent = Intent(context, LocationService::class.java)
-        context.startService(myIntent);
-
+        context.startForegroundService(myIntent)
 
         /*if (intent.action == ACTION_PROCESS_UPDATES) {
 

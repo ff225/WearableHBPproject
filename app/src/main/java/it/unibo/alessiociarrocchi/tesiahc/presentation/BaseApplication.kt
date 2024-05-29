@@ -13,6 +13,7 @@ class BaseApplication : Application() {
   }
 
     lateinit var container: AppContainer
+
     override fun onCreate() {
         super.onCreate()
 

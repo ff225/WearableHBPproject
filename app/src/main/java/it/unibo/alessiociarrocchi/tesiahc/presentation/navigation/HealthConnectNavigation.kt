@@ -3,12 +3,17 @@ package it.unibo.alessiociarrocchi.tesiahc.presentation.navigation
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+//import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
+import it.unibo.alessiociarrocchi.tesiahc.showExceptionSnackbar
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.WelcomeScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure.BloodPressureScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure.BloodPressureViewModel
@@ -16,26 +21,30 @@ import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure.Bloo
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailViewModel
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailViewModelFactory
-import it.unibo.alessiociarrocchi.tesiahc.showExceptionSnackbar
-import androidx.compose.ui.platform.LocalContext
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationScreen
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModel
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModelFactory
+import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 
 /**
  * Provides the navigation in the app.
  */
 @Composable
 fun HealthConnectNavigation(
-    navController: NavHostController,
-    healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
-    scaffoldState: ScaffoldState,
+  navController: NavHostController,
+  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
+  scaffoldState: ScaffoldState,
+  myLocationRepository : MyLocationRepository
 ) {
   val scope = rememberCoroutineScope()
   NavHost(navController = navController, startDestination = Screen.WelcomeScreen.route) {
-    val availability by healthConnectManager.availability
+
+    val availabilityHealthConnect by healthConnectManager.availability
 
     // pagina di benvenuto
     composable(Screen.WelcomeScreen.route) {
       WelcomeScreen(
-        healthConnectAvailability = availability,
+        healthConnectAvailability = availabilityHealthConnect,
         onResumeAvailabilityCheck = {
           healthConnectManager.checkAvailability()
         }
@@ -125,6 +134,29 @@ fun HealthConnectNavigation(
         },
         onPermissionsLaunch = { values ->
           permissionsLauncher.launch(values)
+        }
+      )
+    }
+
+    // elenco misurazioni sonno
+    composable(Screen.ReadSleep.route){
+
+    }
+
+    // elenco posizioni gps
+    composable(Screen.ReadLocations.route){
+      val viewModel: LocationViewModel = viewModel(
+        factory = LocationViewModelFactory(myLocationRepository)
+      )
+      viewModel.initialLoad()
+      val sessionsList by viewModel.locList.collectAsState()
+
+      LocationScreen(
+        locList = sessionsList,
+        onLongClik = {
+            uid -> viewModel.deleteLocation(uid)
+            viewModel.refreshList()
+            showInfoSnackbar(scaffoldState, scope, "Elemento eliminato correttamente")
         }
       )
     }

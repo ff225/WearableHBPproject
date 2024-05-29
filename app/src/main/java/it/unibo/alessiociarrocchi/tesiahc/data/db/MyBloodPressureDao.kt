@@ -19,9 +19,9 @@ interface MyBloodPressureDao {
     @Delete
     suspend fun delete(item: MyBloodPressureEntity)
 
-    @Query("SELECT * from my_location_table WHERE id = :id")
+    @Query("SELECT * from my_blood_pressure_table WHERE id = :id")
     fun getBP(id: Int): Flow<MyBloodPressureEntity>
 
-    @Query("SELECT * from my_location_table ORDER BY id DESC")
+    @Query("SELECT * from my_blood_pressure_table ORDER BY id DESC")
     fun getAllBP(): Flow<List<MyBloodPressureEntity>>
 }

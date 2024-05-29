@@ -20,4 +20,5 @@ class AppDataContainer(private val context: Context) : AppContainer {
     override val bpRepository: BloodPressureRepository by lazy {
         BloodPressureRepository(MyLocalDatabase.getDatabase(context).bpDao())
     }
+
 }

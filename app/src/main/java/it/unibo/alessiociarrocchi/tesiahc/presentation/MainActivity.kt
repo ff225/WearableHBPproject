@@ -8,7 +8,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.services.LocationService
+import java.util.concurrent.Executors
 
 class MainActivity : ComponentActivity()  {
 
@@ -35,8 +37,14 @@ class MainActivity : ComponentActivity()  {
 
     val healthConnectManager = (application as BaseApplication).healthConnectManager
 
+    val locationRepository = MyLocationRepository.getInstance(
+        applicationContext, Executors.newSingleThreadExecutor()
+      )
+
     setContent {
-      HealthConnectApp(healthConnectManager = healthConnectManager)
+      HealthConnectApp(
+        healthConnectManager = healthConnectManager,
+        locationRepository = locationRepository)
     }
 
     if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED

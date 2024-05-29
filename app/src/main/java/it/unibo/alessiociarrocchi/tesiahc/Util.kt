@@ -37,6 +37,19 @@ fun showExceptionSnackbar(
   }
 }
 
+fun showInfoSnackbar(
+  scaffoldState: ScaffoldState,
+  scope: CoroutineScope,
+  message: String,
+) {
+  scope.launch {
+    scaffoldState.snackbarHostState.showSnackbar(
+      message = message,
+      duration = SnackbarDuration.Short
+    )
+  }
+}
+
 
 //CONVERSIONE data ed ora per il db
 fun instantToLong(myInstant : Instant): Long{

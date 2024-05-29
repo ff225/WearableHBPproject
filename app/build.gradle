@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -38,7 +39,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
     packagingOptions {
         resources {
@@ -49,6 +50,7 @@ android {
 
 dependencies {
 
+    //implementation 'androidx.lifecycle:lifecycle-runtime-compose-android:2.8.0'
     def composeBom = platform('androidx.compose:compose-bom:2024.05.00')
     implementation(composeBom)
 
@@ -85,14 +87,13 @@ dependencies {
 
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
 
-
-    //implementation "androidx.room:room-ktx:$room_version"
-
     implementation "androidx.work:work-runtime-ktx:2.9.0"
 
     //Room
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation  "androidx.room:room-ktx:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
 
     // Location
     implementation "com.google.android.gms:play-services-location:21.2.0"

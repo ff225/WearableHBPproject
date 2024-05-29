@@ -99,7 +99,6 @@ fun BloodPressureScreen(
                         onDetailsClick = { uid ->
                             onDetailsClick(uid)
                         },
-
                     )
                 }
             }
