@@ -31,7 +31,8 @@ const val TAG = "Tesi Android Health Connect"
 @Composable
 fun HealthConnectApp(
   healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
-  locationRepository: MyLocationRepository
+  locationRepository: MyLocationRepository,
+  applicationContext: android.content.Context
 ) {
   HealthConnectTheme {
     val scaffoldState = rememberScaffoldState()
@@ -85,9 +86,10 @@ fun HealthConnectApp(
       }
     ) {
       HealthConnectNavigation(
-        healthConnectManager = healthConnectManager,
         navController = navController,
         scaffoldState = scaffoldState,
+        applicationContext = applicationContext,
+        healthConnectManager = healthConnectManager,
         myLocationRepository = locationRepository
       )
     }

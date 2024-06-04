@@ -44,7 +44,8 @@ class MainActivity : ComponentActivity()  {
     setContent {
       HealthConnectApp(
         healthConnectManager = healthConnectManager,
-        locationRepository = locationRepository)
+        locationRepository = locationRepository,
+        applicationContext = applicationContext)
     }
 
     if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED

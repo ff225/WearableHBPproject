@@ -21,11 +21,16 @@ class LocationViewModel(private val myLocationRepository: MyLocationRepository) 
         refreshList()
     }
 
-    fun deleteLocation(uid:Int){
+    fun deleteLocationAndRefresh(uid:Int){
+        deleteLocation(uid)
+        refreshList()
+    }
+
+    private fun deleteLocation(uid:Int){
         myLocationRepository.deleteLocation(uid)
     }
 
-    fun refreshList(){
+    private fun refreshList(){
         viewModelScope.launch {
             _locList.value = myLocationRepository.getLocations()
         }

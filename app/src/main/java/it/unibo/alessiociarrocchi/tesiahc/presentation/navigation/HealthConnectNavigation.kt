@@ -32,8 +32,9 @@ import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 @Composable
 fun HealthConnectNavigation(
   navController: NavHostController,
-  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
   scaffoldState: ScaffoldState,
+  applicationContext: android.content.Context,
+  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
   myLocationRepository : MyLocationRepository
 ) {
   val scope = rememberCoroutineScope()
@@ -47,7 +48,9 @@ fun HealthConnectNavigation(
         healthConnectAvailability = availabilityHealthConnect,
         onResumeAvailabilityCheck = {
           healthConnectManager.checkAvailability()
-        }
+        },
+        applicationContext = applicationContext,
+        scaffoldState = scaffoldState,
       )
     }
 
@@ -154,8 +157,7 @@ fun HealthConnectNavigation(
       LocationScreen(
         locList = sessionsList,
         onLongClik = {
-            uid -> viewModel.deleteLocation(uid)
-            viewModel.refreshList()
+            uid -> viewModel.deleteLocationAndRefresh(uid)
             showInfoSnackbar(scaffoldState, scope, "Elemento eliminato correttamente")
         }
       )

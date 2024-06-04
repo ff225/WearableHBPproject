@@ -21,6 +21,9 @@ interface MyLocationDao {
     @Query("SELECT * FROM my_location_table WHERE id=(:id)")
     fun getLocation(id: Int): MyLocationEntity
 
+    @Query("SELECT * FROM my_location_table ORDER BY date DESC LIMIT 1")
+    fun getLastLocation(): MyLocationEntity
+
     @Update
     fun updateLocation(myLocationEntity: MyLocationEntity)
 

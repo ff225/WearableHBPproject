@@ -51,8 +51,8 @@ class LocationService : Service() {
 
     private fun start() {
         val notification = NotificationCompat.Builder(this, "location")
-            .setContentTitle("Tracking location ...")
-            .setContentText("Location: null")
+            .setContentTitle("Tesi Android Health Connect")
+            .setContentText("Avvio servizio localizzazione GPS...")
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setShowWhen(true)
             .setAutoCancel(true)
@@ -66,24 +66,36 @@ class LocationService : Service() {
             .onEach { location ->
                 //Log.d(TAG, location.latitude.toString() + " " + location.longitude.toString())
 
-                val loc_latitude = location.latitude
-                val loc_longitude = location.longitude
-                val loc_time = location.time;
+                if(location != null){
+                    val loc_latitude = location.latitude
+                    val loc_longitude = location.longitude
+                    val loc_time = location.time;
 
-                //TODO salvare solo se l'ultima posizione è oltre 15 minuti
-                val mylocation = MyLocationEntity(
-                    latitude = loc_latitude,
-                    longitude = loc_longitude,
-                    date = Date(loc_time)
-                )
-                MyLocationRepository.getInstance(applicationContext, Executors.newSingleThreadExecutor())
-                    .addLocation(mylocation)
+                    val lastLocation = MyLocationRepository.getInstance(applicationContext, Executors.newSingleThreadExecutor())
+                        .getLastLocation()
 
-                val updatedNotification = notification
-                    .setContentText("Location: ${loc_latitude.toString()}, ${loc_longitude.toString()}")
-                    .setWhen(System.currentTimeMillis())
+                    val last_time = lastLocation.date.time
+                    val last_time_conf =last_time + (15 * 60 * 1000) // aggiungo 15 minuti
+                    if(last_time_conf < loc_time){
 
-                notificationManager.notify(1, updatedNotification.build())
+                        val mylocation = MyLocationEntity(
+                            latitude = loc_latitude,
+                            longitude = loc_longitude,
+                            date = Date(loc_time)
+                        )
+
+                        MyLocationRepository.getInstance(applicationContext, Executors.newSingleThreadExecutor())
+                            .addLocation(mylocation)
+
+                        val updatedNotification = notification
+                            .setContentText("Location: ${loc_latitude.toString()}, ${loc_longitude.toString()}")
+                            .setWhen(System.currentTimeMillis())
+
+                        notificationManager.notify(1, updatedNotification.build())
+                    }
+
+                }
+
             }
             .launchIn(serviceScope)
 

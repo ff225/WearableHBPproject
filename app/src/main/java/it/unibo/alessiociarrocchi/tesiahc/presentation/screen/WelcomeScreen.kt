@@ -11,17 +11,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -33,6 +38,7 @@ import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMes
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotSupportedMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.theme.HealthConnectTheme
 import it.unibo.alessiociarrocchi.tesiahc.services.LocationService
+import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 
 /**
  * Welcome screen shown when the app is first launched.
@@ -42,7 +48,10 @@ fun WelcomeScreen(
   healthConnectAvailability: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability,
   onResumeAvailabilityCheck: () -> Unit,
   lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+  applicationContext: android.content.Context,
+  scaffoldState : ScaffoldState,
 ) {
+  val scope = rememberCoroutineScope()
   val currentOnAvailabilityCheck by rememberUpdatedState(onResumeAvailabilityCheck)
 
   // Add a listener to re-check whether Health Connect has been installed each time the Welcome
@@ -68,8 +77,8 @@ fun WelcomeScreen(
 
   Column(
     modifier = Modifier
-        .fillMaxSize()
-        .padding(32.dp),
+      .fillMaxSize()
+      .padding(32.dp),
     verticalArrangement = Arrangement.Top,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
@@ -81,13 +90,47 @@ fun WelcomeScreen(
     Spacer(modifier = Modifier.height(32.dp))
     Text(
       text = stringResource(id = R.string.welcome_message),
-      color = MaterialTheme.colors.onBackground
+      color = MaterialTheme.colors.onBackground,
+      fontWeight = FontWeight.Bold
     )
-    Spacer(modifier = Modifier.height(32.dp))
+    Spacer(modifier = Modifier.height(24.dp))
     when (healthConnectAvailability) {
       it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.INSTALLED -> InstalledMessage()
       it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.NOT_INSTALLED -> NotInstalledMessage()
       it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.NOT_SUPPORTED -> NotSupportedMessage()
+    }
+    Spacer(modifier = Modifier.height(32.dp))
+    Text(
+      text = "Servizio localizzazione GPS ogni 15 min.",
+      color = MaterialTheme.colors.onBackground,
+      fontWeight = FontWeight.Bold
+    )
+    Text(
+      text = "(concedere manualmente permessi notifiche)",
+      color = MaterialTheme.colors.onBackground
+    )
+    Spacer(modifier = Modifier.height(12.dp))
+    Button(
+      onClick = {
+        val myIntent = Intent(applicationContext, LocationService::class.java).apply {
+          action = LocationService.ACTION_START
+        }
+        applicationContext.startForegroundService(myIntent)
+        showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente")
+      }) {
+      Text(text = "Avvia")
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+    Button(
+      colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+      onClick = {
+        val myIntent = Intent(applicationContext, LocationService::class.java).apply {
+          action = LocationService.ACTION_STOP
+        }
+        applicationContext.stopService(myIntent)
+        showInfoSnackbar(scaffoldState, scope, "Servizio fermato correttamente")
+      }) {
+      Text(text = "Ferma")
     }
   }
 }

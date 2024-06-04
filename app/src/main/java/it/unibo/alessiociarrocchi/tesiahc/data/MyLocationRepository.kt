@@ -31,6 +31,9 @@ class MyLocationRepository private constructor(
      */
     fun getLocation(id: Int): MyLocationEntity = locationDao.getLocation(id)
 
+    fun getLastLocation(): MyLocationEntity = locationDao.getLastLocation()
+
+
     fun deleteLocation(id: Int){
         locationDao.deleteLocation(id)
     }
