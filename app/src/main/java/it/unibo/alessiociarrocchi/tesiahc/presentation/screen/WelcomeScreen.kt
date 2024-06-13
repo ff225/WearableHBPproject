@@ -1,7 +1,11 @@
 package it.unibo.alessiociarrocchi.tesiahc.presentation.screen
 
+import android.annotation.SuppressLint
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,9 +33,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.InstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMessage
@@ -43,6 +50,9 @@ import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 /**
  * Welcome screen shown when the app is first launched.
  */
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun WelcomeScreen(
   healthConnectAvailability: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability,
@@ -51,6 +61,18 @@ fun WelcomeScreen(
   applicationContext: android.content.Context,
   scaffoldState : ScaffoldState,
 ) {
+
+  val notificationPermission = rememberPermissionState(
+    permission = android.Manifest.permission.POST_NOTIFICATIONS
+  )
+
+  val fineLocationPermission = rememberPermissionState(
+    permission = android.Manifest.permission.ACCESS_FINE_LOCATION
+  )
+  val coarseLocationPermission = rememberPermissionState(
+    permission = android.Manifest.permission.ACCESS_COARSE_LOCATION
+  )
+
   val scope = rememberCoroutineScope()
   val currentOnAvailabilityCheck by rememberUpdatedState(onResumeAvailabilityCheck)
 
@@ -112,11 +134,28 @@ fun WelcomeScreen(
     Spacer(modifier = Modifier.height(12.dp))
     Button(
       onClick = {
-        val myIntent = Intent(applicationContext, LocationService::class.java).apply {
-          action = LocationService.ACTION_START
+
+        if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+          if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+              val myIntent = Intent(applicationContext, LocationService::class.java).apply {
+                action = LocationService.ACTION_START
+              }
+              applicationContext.startForegroundService(myIntent)
+              showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente")
+            }
+            else{
+              notificationPermission.launchPermissionRequest()
+            }
+          }
+          else{
+            coarseLocationPermission.launchPermissionRequest();
+          }
         }
-        applicationContext.startForegroundService(myIntent)
-        showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente")
+        else{
+          fineLocationPermission.launchPermissionRequest();
+        }
+
       }) {
       Text(text = "Avvia")
     }

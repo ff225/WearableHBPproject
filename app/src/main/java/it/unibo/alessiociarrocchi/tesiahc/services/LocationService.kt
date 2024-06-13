@@ -28,6 +28,8 @@ class LocationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: LocationClient
+    /*private lateinit var notification : NotificationCompat.Builder
+    private lateinit var notificationManager : NotificationManager*/
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -50,16 +52,16 @@ class LocationService : Service() {
     }
 
     private fun start() {
-        val notification = NotificationCompat.Builder(this, "location")
-            .setContentTitle("Tesi Android Health Connect")
-            .setContentText("Avvio servizio localizzazione GPS...")
+       /* notification = NotificationCompat.Builder(this, "AHC_location")
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setShowWhen(true)
             .setAutoCancel(true)
+            .setContentTitle("Tesi Android Health Connect")
+            .setContentText("Servizio localizzazione GPS avviato")
 
-        val notificationManager = getSystemService(
+        notificationManager = getSystemService(
             Context.NOTIFICATION_SERVICE
-        ) as NotificationManager
+        ) as NotificationManager*/
 
         locationClient.getLocationUpdates(900000L) //15 minuti
             .catch { e -> e.printStackTrace() }
@@ -74,32 +76,44 @@ class LocationService : Service() {
                     val lastLocation = MyLocationRepository.getInstance(applicationContext, Executors.newSingleThreadExecutor())
                         .getLastLocation()
 
-                    val last_time = lastLocation.date.time
-                    val last_time_conf =last_time + (15 * 60 * 1000) // aggiungo 15 minuti
-                    if(last_time_conf < loc_time){
-
-                        val mylocation = MyLocationEntity(
-                            latitude = loc_latitude,
-                            longitude = loc_longitude,
-                            date = Date(loc_time)
-                        )
-
-                        MyLocationRepository.getInstance(applicationContext, Executors.newSingleThreadExecutor())
-                            .addLocation(mylocation)
-
-                        val updatedNotification = notification
-                            .setContentText("Location: ${loc_latitude.toString()}, ${loc_longitude.toString()}")
-                            .setWhen(System.currentTimeMillis())
-
-                        notificationManager.notify(1, updatedNotification.build())
+                    if (lastLocation == null){
+                        SaveLocation(loc_latitude, loc_longitude, loc_time)
                     }
-
+                    else{
+                        if(lastLocation.mydate == null){
+                            SaveLocation(loc_latitude, loc_longitude, loc_time)
+                        }
+                        else{
+                            val last_time = lastLocation.mydate.time
+                            val last_time_conf =last_time + (15 * 60 * 1000) // aggiungo 15 minuti
+                            if(last_time_conf < loc_time){
+                                SaveLocation(loc_latitude, loc_longitude, loc_time)
+                            }
+                        }
+                    }
                 }
 
             }
             .launchIn(serviceScope)
 
-        startForeground(1, notification.build())
+        //startForeground(1, notification.build())
+    }
+
+    private fun SaveLocation(loc_latitude: Double, loc_longitude: Double, loc_time: Long){
+        val mylocation = MyLocationEntity(
+            latitude = loc_latitude,
+            longitude = loc_longitude,
+            mydate = Date(loc_time)
+        )
+
+        MyLocationRepository.getInstance(applicationContext, Executors.newSingleThreadExecutor())
+            .addLocation(mylocation)
+
+       /* val updatedNotification = notification
+            .setContentText("Location: ${loc_latitude.toString()}, ${loc_longitude.toString()}")
+            .setWhen(System.currentTimeMillis())
+
+        notificationManager.notify(1, updatedNotification.build())*/
     }
 
     private fun stop() {

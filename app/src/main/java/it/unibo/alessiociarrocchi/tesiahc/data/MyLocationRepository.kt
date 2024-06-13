@@ -3,8 +3,9 @@ package it.unibo.alessiociarrocchi.tesiahc.data
 import android.content.Context
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocalDatabase
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
+import it.unibo.alessiociarrocchi.tesiahc.toDate
 import java.util.concurrent.ExecutorService
-
+import it.unibo.alessiociarrocchi.tesiahc.toLong
 /**
  * Access point for database (MyLocation data) and location APIs (start/stop location updates and
  * checking location update status).
@@ -18,17 +19,14 @@ class MyLocationRepository private constructor(
     // Database related fields/methods:
     private val locationDao = myLocationDatabase.locationDao()
 
-    /**
-     * Returns all recorded locations from database.
-     */
-    fun getLocations(): List<MyLocationEntity> = locationDao.getLocations()
+    fun getLocationsToday(today: String): List<MyLocationEntity>{
+        return locationDao.getLocationsToday(today.toDate())
+    }
 
-    //TODO locations filtrate per data
+    fun getLocationsDates(dataInizio: String, dataFine: String): List<MyLocationEntity>{
+        return locationDao.getLocationsDates(dataInizio.toDate(), dataFine.toDate())
+    }
 
-    // Not being used now but could in future versions.
-    /**
-     * Returns specific location in database.
-     */
     fun getLocation(id: Int): MyLocationEntity = locationDao.getLocation(id)
 
     fun getLastLocation(): MyLocationEntity = locationDao.getLastLocation()
@@ -38,28 +36,18 @@ class MyLocationRepository private constructor(
         locationDao.deleteLocation(id)
     }
 
-    // Not being used now but could in future versions.
-    /**
-     * Updates location in database.
-     */
     fun updateLocation(myLocationEntity: MyLocationEntity) {
         executor.execute {
             locationDao.updateLocation(myLocationEntity)
         }
     }
 
-    /**
-     * Adds location to the database.
-     */
     fun addLocation(myLocationEntity: MyLocationEntity) {
         executor.execute {
             locationDao.addLocation(myLocationEntity)
         }
     }
 
-    /**
-     * Adds list of locations to the database.
-     */
     fun addLocations(myLocationEntities: List<MyLocationEntity>) {
         executor.execute {
             locationDao.addLocations(myLocationEntities)

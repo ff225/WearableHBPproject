@@ -14,9 +14,10 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
   <application
-      android:allowBackup="true"
+      android:allowBackup="false"
       android:enableOnBackInvokedCallback="true"
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
@@ -54,6 +55,8 @@
         <action android:name="android.intent.action.BOOT_COMPLETED"/>
       </intent-filter>
     </receiver>
+
+    <receiver android:name=".receivers.HourNotificationReceiver"/>
 
   </application>
 

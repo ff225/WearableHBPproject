@@ -156,9 +156,13 @@ fun HealthConnectNavigation(
 
       LocationScreen(
         locList = sessionsList,
-        onLongClik = {
+        onLongClick = {
             uid -> viewModel.deleteLocationAndRefresh(uid)
             showInfoSnackbar(scaffoldState, scope, "Elemento eliminato correttamente")
+        },
+        onConfirmFilters = {
+          dates -> viewModel.refreshWithFilters(dates)
+          showInfoSnackbar(scaffoldState, scope, "Lista aggiornata correttamente")
         }
       )
     }

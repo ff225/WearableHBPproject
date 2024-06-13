@@ -4,7 +4,7 @@ buildscript {
         activity_compose_version = '1.9.0'
         hilt_navigation_compose_version = '1.0.0'
         navigation_compose_version = '2.7.7'
-        concurrent_futures_version = '1.1.0'
+        concurrent_futures_version = '1.2.0'
         lifecycle_version = '2.8.0'
         room_version = "2.6.1"
     }
@@ -13,30 +13,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.4.1'
+        classpath 'com.android.tools.build:gradle:8.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 plugins {
-    id "com.diffplug.spotless" version "5.0.0"
     id 'com.google.devtools.ksp' version '1.9.24-1.0.20' apply false
     //id "org.jetbrains.kotlin.plugin.compose" version '1.9.24' apply false
 }
 
 subprojects {
-    apply plugin: "com.diffplug.spotless"
-    spotless {
-        kotlin {
-            target "**/*.kt"
-            targetExclude("$buildDir/**/*.kt")
-            targetExclude("bin/**/*.kt")
 
-            ktlint("0.41.0").userData(["max_line_length" : "100"])
-            trimTrailingWhitespace()
-            indentWithSpaces()
-            endWithNewline()
-            licenseHeaderFile rootProject.file("spotless/copyright.txt")
-        }
-    }
 }

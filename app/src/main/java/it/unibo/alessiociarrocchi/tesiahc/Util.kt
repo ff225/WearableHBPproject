@@ -20,6 +20,7 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoField
 import java.util.Date
 import com.google.android.material.snackbar.Snackbar
+import java.util.Locale
 
 /**
  * Shows details of a given throwable in the snackbar
@@ -73,7 +74,7 @@ fun localDateTimeToString(_myZonedDT: LocalDateTime, _myFormat: String = ""): St
     myFormat = "dd/MM/yyyy HH:mm:ss"
   }
 
-  val formatter: SimpleDateFormat = SimpleDateFormat(myFormat)
+  val formatter: SimpleDateFormat = SimpleDateFormat(myFormat, Locale.getDefault())
   return formatter.format(_myZonedDT)
 }
 
@@ -84,4 +85,45 @@ fun Context.hasLocationPermission(): Boolean {
           ContextCompat.checkSelfPermission(
             this, Manifest.permission.ACCESS_FINE_LOCATION
           ) == PackageManager.PERMISSION_GRANTED
+}
+
+fun String?.toLong(): Long {
+  val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+  val date = formatter.parse(this)
+  return date!!.time
+}
+
+fun String?.toDate(): Date {
+  val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+  return formatter.parse(this)
+}
+
+fun Long?.toDate(): String {
+  val dateFormat = SimpleDateFormat("d MMM, y", Locale.getDefault())
+  return try {
+    dateFormat.format(this)
+  } catch (t: Throwable) {
+    t.printStackTrace()
+    ""
+  }
+}
+
+fun Long?.toYear(): String {
+  val dateFormat = SimpleDateFormat("y", Locale.getDefault())
+  return try {
+    dateFormat.format(this)
+  } catch (t: Throwable) {
+    t.printStackTrace()
+    ""
+  }
+}
+
+fun Long?.toTime(): String {
+  val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
+  return try {
+    timeFormat.format(this)
+  } catch (t: Throwable) {
+    t.printStackTrace()
+    ""
+  }
 }

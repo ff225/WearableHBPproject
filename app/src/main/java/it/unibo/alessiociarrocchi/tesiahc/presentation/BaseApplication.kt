@@ -18,16 +18,24 @@ class BaseApplication : Application() {
         super.onCreate()
 
         val channel = NotificationChannel(
-                "location",
-                "Location",
-                NotificationManager.IMPORTANCE_HIGH
+                "AHC_location",
+                "LocationTesiAndroidHealthConnect",
+                NotificationManager.IMPORTANCE_LOW
             )
-
         val notificationManager = getSystemService(
             Context.NOTIFICATION_SERVICE
         ) as NotificationManager
-
         notificationManager.createNotificationChannel(channel)
+
+        val channel1 = NotificationChannel(
+                "AHC_hour_notification",
+                "HourNotificationTesiAndroidHealthConnect",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+        val notificationManager1 = getSystemService(
+            Context.NOTIFICATION_SERVICE
+        ) as NotificationManager
+        notificationManager1.createNotificationChannel(channel1)
 
         container = AppDataContainer(this)
     }
