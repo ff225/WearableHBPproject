@@ -5,7 +5,6 @@ import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocalDatabase
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
 import it.unibo.alessiociarrocchi.tesiahc.toDate
 import java.util.concurrent.ExecutorService
-import it.unibo.alessiociarrocchi.tesiahc.toLong
 /**
  * Access point for database (MyLocation data) and location APIs (start/stop location updates and
  * checking location update status).
@@ -16,7 +15,6 @@ class MyLocationRepository private constructor(
     private val executor: ExecutorService
 ) {
 
-    // Database related fields/methods:
     private val locationDao = myLocationDatabase.locationDao()
 
     fun getLocationsToday(today: String): List<MyLocationEntity>{

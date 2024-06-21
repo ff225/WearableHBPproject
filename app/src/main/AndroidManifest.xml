@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
   <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE"/>
-  <!--<uses-permission android:name="android.permission.health.WRITE_BLOOD_PRESSURE"/>-->
   <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
-  <!--<uses-permission android:name="android.permission.health.WRITE_HEART_RATE"/>-->
+  <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
 
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -50,9 +49,12 @@
       </intent-filter>
     </activity>
 
-    <receiver android:name=".receivers.LocationReceiver" android:enabled="true" android:exported="false">
+    <receiver android:name=".receivers.LocationReceiver"
+        android:enabled="true"
+        android:exported="false">
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED"/>
+        <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
       </intent-filter>
     </receiver>
 

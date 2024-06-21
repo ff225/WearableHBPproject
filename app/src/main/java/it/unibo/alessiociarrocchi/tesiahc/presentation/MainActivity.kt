@@ -45,15 +45,15 @@ class MainActivity : ComponentActivity()  {
     am.setRepeating(
       AlarmManager.RTC_WAKEUP,
       calendar.getTimeInMillis(),
-      (1000 * 60 * 60).toLong(),
+      (2000 * 60 * 60).toLong(), //2H 2000 * 60 * 60
       pendingIntent
     )
 
     val healthConnectManager = (application as BaseApplication).healthConnectManager
 
     val locationRepository = MyLocationRepository.getInstance(
-        applicationContext, Executors.newSingleThreadExecutor()
-      )
+      applicationContext, Executors.newSingleThreadExecutor()
+    )
 
     setContent {
       HealthConnectApp(

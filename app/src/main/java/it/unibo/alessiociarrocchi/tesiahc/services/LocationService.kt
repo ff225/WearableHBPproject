@@ -9,8 +9,10 @@ import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocalDatabase
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
 import it.unibo.alessiociarrocchi.tesiahc.interfaces.LocationClient
+import it.unibo.alessiociarrocchi.tesiahc.presentation.BaseApplication
 import it.unibo.alessiociarrocchi.tesiahc.presentation.DefaultLocationClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,14 +24,15 @@ import kotlinx.coroutines.flow.onEach
 import java.util.Date
 import java.util.concurrent.Executors
 
-private const val TAG = "LocationService"
+//private const val TAG = "LocationService"
 
 class LocationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: LocationClient
-    /*private lateinit var notification : NotificationCompat.Builder
-    private lateinit var notificationManager : NotificationManager*/
+    private lateinit var notification : NotificationCompat.Builder
+    private lateinit var notificationManager : NotificationManager
+
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -52,7 +55,7 @@ class LocationService : Service() {
     }
 
     private fun start() {
-       /* notification = NotificationCompat.Builder(this, "AHC_location")
+        notification = NotificationCompat.Builder(this, "AHC_location")
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setShowWhen(true)
             .setAutoCancel(true)
@@ -61,7 +64,7 @@ class LocationService : Service() {
 
         notificationManager = getSystemService(
             Context.NOTIFICATION_SERVICE
-        ) as NotificationManager*/
+        ) as NotificationManager
 
         locationClient.getLocationUpdates(900000L) //15 minuti
             .catch { e -> e.printStackTrace() }
@@ -96,7 +99,7 @@ class LocationService : Service() {
             }
             .launchIn(serviceScope)
 
-        //startForeground(1, notification.build())
+        startForeground(1, notification.build())
     }
 
     private fun SaveLocation(loc_latitude: Double, loc_longitude: Double, loc_time: Long){
@@ -109,11 +112,11 @@ class LocationService : Service() {
         MyLocationRepository.getInstance(applicationContext, Executors.newSingleThreadExecutor())
             .addLocation(mylocation)
 
-       /* val updatedNotification = notification
+        val updatedNotification = notification
             .setContentText("Location: ${loc_latitude.toString()}, ${loc_longitude.toString()}")
             .setWhen(System.currentTimeMillis())
 
-        notificationManager.notify(1, updatedNotification.build())*/
+        notificationManager.notify(1, updatedNotification.build())
     }
 
     private fun stop() {

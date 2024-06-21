@@ -9,10 +9,10 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.services.HourNotificationService
+import it.unibo.alessiociarrocchi.tesiahc.services.LocationService
 
 class HourNotificationReceiver: BroadcastReceiver() {
 
-    @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     override fun onReceive(context: Context, intent: Intent) {
 
@@ -35,9 +35,9 @@ class HourNotificationReceiver: BroadcastReceiver() {
             .setWhen(mywhen)
             .setContentIntent(pendingIntent)
             .setContentTitle("Tesi Android Health Connect")
-            .setContentText("E' il momento giusto per effettuare la misurazione della pressione arteriosa")
+            .setContentText("E' un buon momento per effettuare la misurazione della pressione arteriosa?")
 
         notificationManager.notify(2, mNotifyBuilder.build())
-    }
 
+    }
 }

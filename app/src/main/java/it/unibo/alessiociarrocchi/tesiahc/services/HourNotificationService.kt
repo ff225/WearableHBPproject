@@ -1,7 +1,9 @@
 package it.unibo.alessiociarrocchi.tesiahc.services
 
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -14,8 +16,6 @@ import kotlinx.coroutines.cancel
 class HourNotificationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    //private lateinit var notification : NotificationCompat.Builder
-    //private lateinit var notificationManager : NotificationManager
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -33,19 +33,16 @@ class HourNotificationService : Service() {
     }
 
     private fun start() {
-        /*notification = NotificationCompat.Builder(this, "AHC_hour_notification")
-            .setContentTitle("Tesi Android Health Connect")
-            .setContentText("Ricordati di effettuare una misurazione della pressione arteriosa")
+
+        /*val notification = NotificationCompat.Builder(this, "AHC_hour_notification")
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setShowWhen(true)
             .setWhen(System.currentTimeMillis())
             .setAutoCancel(true)
+            .setContentTitle("Tesi Android Health Connect")
+            .setContentText("E' un buon momento per effettuare la misurazione della pressione arteriosa?")
 
-        notificationManager = getSystemService(
-            NOTIFICATION_SERVICE
-        ) as NotificationManager
-
-        startForeground(1, notification.build())*/
+        startForeground(2, notification.build())*/
     }
 
     private fun stop() {

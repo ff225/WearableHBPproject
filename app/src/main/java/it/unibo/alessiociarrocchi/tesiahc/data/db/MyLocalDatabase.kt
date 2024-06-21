@@ -6,13 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-private const val DATABASE_NAME = "tesiahc-database"
+private const val DATABASE_NAME = "tesiahc_database"
 
 @Database(entities =
     [
         MyBloodPressureEntity::class,
         MyHeartRateAggregateEntity::class,
-        MyLocationEntity::class
+        MyLocationEntity::class,
+        MySleepSegmentEventEntity::class,
+        MySleepClassifyEventEntity::class
     ],
     version = 1,
     exportSchema = false)
@@ -22,20 +24,28 @@ abstract class MyLocalDatabase : RoomDatabase() {
     abstract fun bpDao(): MyBloodPressureDao
     abstract fun bpHRDao(): MyHeartRateAggregateDao
     abstract fun locationDao(): MyLocationDao
+    abstract fun sleepSegmentEventDao(): MySleepSegmentEventDao
+    abstract fun sleepClassifyEventDao(): MySleepClassifyEventDao
 
     companion object {
         @Volatile
-        private var Instance: MyLocalDatabase? = null
+        private var INSTANCE: MyLocalDatabase? = null
 
         fun getDatabase(context: Context): MyLocalDatabase {
-            // if the Instance is not null, return it, otherwise create a new database instance.
-            return Instance ?: synchronized(this) {
-                Room.databaseBuilder(
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
                     context,
                     MyLocalDatabase::class.java,
-                    DATABASE_NAME)
+                    DATABASE_NAME
+                )
+                    // Wipes and rebuilds instead of migrating if no Migration object.
+                    // Migration is not part of this sample.
+                    .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()
-                    .build().also { Instance = it }
+                    .build()
+                INSTANCE = instance
+                // return instance
+                instance
             }
         }
     }

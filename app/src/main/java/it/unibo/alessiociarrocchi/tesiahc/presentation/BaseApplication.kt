@@ -8,9 +8,9 @@ import it.unibo.alessiociarrocchi.tesiahc.data.AppContainer
 import it.unibo.alessiociarrocchi.tesiahc.data.AppDataContainer
 
 class BaseApplication : Application() {
-  val healthConnectManager by lazy {
+    val healthConnectManager by lazy {
       it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager(this)
-  }
+    }
 
     lateinit var container: AppContainer
 
