@@ -1,5 +1,5 @@
 package it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps
-
+/*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -82,3 +82,4 @@ class LocationViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+*/

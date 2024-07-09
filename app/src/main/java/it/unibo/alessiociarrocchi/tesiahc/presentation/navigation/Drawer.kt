@@ -75,12 +75,12 @@ fun Drawer(
       )
     }
     Spacer(modifier = Modifier.height(16.dp))
-    Text(
+    /*Text(
       modifier = Modifier.fillMaxWidth(),
       textAlign = TextAlign.Center,
       text = stringResource(id = R.string.app_name)
     )
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(16.dp))*/
     Screen.entries.filter { it.hasMenuItem }.forEach { item ->
       DrawerItem(
         item = item,

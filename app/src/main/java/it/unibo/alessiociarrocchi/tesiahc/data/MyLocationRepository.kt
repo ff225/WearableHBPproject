@@ -5,10 +5,8 @@ import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocalDatabase
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
 import it.unibo.alessiociarrocchi.tesiahc.toDate
 import java.util.concurrent.ExecutorService
-/**
- * Access point for database (MyLocation data) and location APIs (start/stop location updates and
- * checking location update status).
- */
+
+/*
 class MyLocationRepository private constructor(
     private val myLocationDatabase: MyLocalDatabase,
     private val myLocationManager: MyLocationManager,
@@ -67,3 +65,4 @@ class MyLocationRepository private constructor(
     }
 
 }
+*/

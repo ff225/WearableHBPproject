@@ -1,5 +1,5 @@
 package it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps
-
+/*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -64,3 +64,4 @@ fun LocationScreen(
         }
     }
 }
+*/

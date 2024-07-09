@@ -17,6 +17,7 @@ class BaseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        /*
         val channel = NotificationChannel(
                 "AHC_location",
                 "LocationTesiAndroidHealthConnect",
@@ -36,6 +37,7 @@ class BaseApplication : Application() {
             Context.NOTIFICATION_SERVICE
         ) as NotificationManager
         notificationManager1.createNotificationChannel(channel1)
+        */
 
         container = AppDataContainer(this)
     }

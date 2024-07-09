@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.BloodPressureRecord
+import androidx.health.connect.client.records.HeartRateRecord
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -17,11 +18,7 @@ import java.util.UUID
 import kotlinx.coroutines.launch
 
 class BloodPressureViewModel(private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager) :
-    ViewModel() {
-    val permissions = setOf(
-        //HealthPermission.getWritePermission(BloodPressureRecord::class),
-        HealthPermission.getReadPermission(BloodPressureRecord::class)
-    )
+ViewModel() {
 
     var permissionsGranted = mutableStateOf(false)
         private set
@@ -79,7 +76,7 @@ class BloodPressureViewModel(private val healthConnectManager: it.unibo.alessioc
      * [UiState.Error], which results in the snackbar being used to show the error message.
      */
     private suspend fun tryWithPermissionsCheck(block: suspend () -> Unit) {
-        permissionsGranted.value = healthConnectManager.hasAllPermissions(permissions)
+        permissionsGranted.value = healthConnectManager.hasAllPermissions(healthConnectManager.permissions)
         uiState = try {
             if (permissionsGranted.value) {
                 block()

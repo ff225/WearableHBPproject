@@ -1,5 +1,6 @@
 package it.unibo.alessiociarrocchi.tesiahc.services
 
+/*
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
@@ -99,7 +100,7 @@ class LocationService : Service() {
             }
             .launchIn(serviceScope)
 
-        startForeground(1, notification.build())
+        startForeground(3, notification.build())
     }
 
     private fun SaveLocation(loc_latitude: Double, loc_longitude: Double, loc_time: Long){
@@ -116,7 +117,7 @@ class LocationService : Service() {
             .setContentText("Location: ${loc_latitude.toString()}, ${loc_longitude.toString()}")
             .setWhen(System.currentTimeMillis())
 
-        notificationManager.notify(1, updatedNotification.build())
+        notificationManager.notify(3, updatedNotification.build())
     }
 
     private fun stop() {
@@ -135,3 +136,4 @@ class LocationService : Service() {
     }
 
 }
+*/

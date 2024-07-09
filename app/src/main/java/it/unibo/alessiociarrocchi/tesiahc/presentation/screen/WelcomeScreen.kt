@@ -34,28 +34,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.startActivity
+import androidx.health.connect.client.HealthConnectClient
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import it.unibo.alessiociarrocchi.tesiahc.R
+import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.InstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotSupportedMessage
-import it.unibo.alessiociarrocchi.tesiahc.presentation.theme.HealthConnectTheme
-import it.unibo.alessiociarrocchi.tesiahc.services.LocationService
 import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
+import it.unibo.alessiociarrocchi.tesiahc.startHealthDataSync
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import android.health.connect.HealthConnectManager as HCM
 
 /**
  * Welcome screen shown when the app is first launched.
  */
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun WelcomeScreen(
   healthConnectAvailability: it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability,
+  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
   onResumeAvailabilityCheck: () -> Unit,
   lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
   applicationContext: android.content.Context,
@@ -104,72 +109,146 @@ fun WelcomeScreen(
     verticalArrangement = Arrangement.Top,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    Image(
+    /*Image(
       modifier = Modifier.fillMaxWidth(0.5f),
       painter = painterResource(id = R.drawable.ic_health_connect_logo),
       contentDescription = stringResource(id = R.string.health_connect_logo)
-    )
+    )*/
     Spacer(modifier = Modifier.height(32.dp))
     Text(
       text = stringResource(id = R.string.welcome_message),
       color = MaterialTheme.colors.onBackground,
       fontWeight = FontWeight.Bold
     )
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(12.dp))
     when (healthConnectAvailability) {
       it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.INSTALLED -> InstalledMessage()
       it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.NOT_INSTALLED -> NotInstalledMessage()
       it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.NOT_SUPPORTED -> NotSupportedMessage()
     }
-    Spacer(modifier = Modifier.height(32.dp))
-    Text(
-      text = "Servizio localizzazione GPS ogni 15 min.",
-      color = MaterialTheme.colors.onBackground,
-      fontWeight = FontWeight.Bold
-    )
-    Text(
-      text = "(concedere manualmente permessi notifiche)",
-      color = MaterialTheme.colors.onBackground
-    )
-    Spacer(modifier = Modifier.height(12.dp))
-    Button(
-      onClick = {
 
+    // se health connect risulta correttamente installato
+    if(healthConnectAvailability == it.unibo.alessiociarrocchi.tesiahc.data.HealthConnectAvailability.INSTALLED){
+      Spacer(modifier = Modifier.height(64.dp))
+
+      var hoPermsHealth : Boolean = false
+
+      runBlocking {
+        launch {
+          hoPermsHealth = healthConnectManager.hasAllPermissions(healthConnectManager.permissions)
+        }
+      }
+
+      if(hoPermsHealth) {
         if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
           if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
-              val myIntent = Intent(applicationContext, LocationService::class.java).apply {
-                action = LocationService.ACTION_START
+              Text(
+                text = "Servizio di sincronizzazione dati Health Connect",
+                color = MaterialTheme.colors.onBackground,
+                fontWeight = FontWeight.Bold
+              )
+              /*Text(
+                text = "(concedere manualmente permessi notifiche)",
+                color = MaterialTheme.colors.onBackground
+              )*/
+              Spacer(modifier = Modifier.height(8.dp))
+              if(MainActivity.SERVIZIO_HEALTHDATA == "0") {
+                Button(
+                  onClick = {
+
+                    if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                      if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                        if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+                          if(MainActivity.SERVIZIO_HEALTHDATA == "0"){
+                            startHealthDataSync(applicationContext)
+                            showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente")
+                          }
+                          else{
+                            showInfoSnackbar(scaffoldState, scope, "Il servizio è già attivo")
+                          }
+                        }
+                        else{
+                          notificationPermission.launchPermissionRequest()
+                        }
+                      }
+                      else{
+                        coarseLocationPermission.launchPermissionRequest();
+                      }
+                    }
+                    else{
+                      fineLocationPermission.launchPermissionRequest();
+                    }
+
+                  }) {
+                  Text(text = "Avvia")
+                }
               }
-              applicationContext.startForegroundService(myIntent)
-              showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente")
+              else{
+                Text(
+                  text = "Il servizio è già attivo",
+                  color = MaterialTheme.colors.onBackground
+                )
+              }
             }
             else{
-              notificationPermission.launchPermissionRequest()
+              Button(
+                onClick = {
+                  notificationPermission.launchPermissionRequest()
+                }
+              ){
+                Text("Concedi permessi notifiche")
+              }
             }
           }
           else{
-            coarseLocationPermission.launchPermissionRequest();
+            Button(
+              onClick = {
+                coarseLocationPermission.launchPermissionRequest()
+              }
+            ){
+              Text("Concedi permessi posizione GPS")
+            }
           }
         }
         else{
-          fineLocationPermission.launchPermissionRequest();
+          Button(
+            onClick = {
+              fineLocationPermission.launchPermissionRequest()
+            }
+          ){
+            Text("Concedi permessi posizione GPS")
+          }
         }
 
-      }) {
-      Text(text = "Avvia")
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-    Button(
-      colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
-      onClick = {
-        val myIntent = Intent(applicationContext, LocationService::class.java).apply {
-          action = LocationService.ACTION_STOP
+      }
+      else {
+        Button(
+          onClick ={
+            val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+              // HCM is an import alias for HealthConnectManager from the Health Connect client
+              Intent(HCM.ACTION_MANAGE_HEALTH_PERMISSIONS)
+                .putExtra(
+                  Intent.EXTRA_PACKAGE_NAME,
+                  applicationContext.packageName
+                )
+            } else {
+              Intent(
+                HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+              )
+            }
+            startActivity(applicationContext, intent, null)
+
+            healthConnectManager.requestPermissionsActivityContract()
+          }
+        ){
+          Text("Concedi permessi Health Connect")
         }
-        applicationContext.stopService(myIntent)
-        showInfoSnackbar(scaffoldState, scope, "Servizio fermato correttamente")
-      }) {
-      Text(text = "Ferma")
+      }
+
+
     }
+
   }
 }
+

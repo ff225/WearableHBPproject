@@ -22,10 +22,6 @@ class BloodPressureDetailViewModel(
   private val uid: String,
   private val healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
 ) : ViewModel() {
-  val permissions = setOf(
-    HealthPermission.getReadPermission(BloodPressureRecord::class),
-    HealthPermission.getReadPermission(HeartRateRecord::class)
-  )
 
   var permissionsGranted = mutableStateOf(false)
     private set
@@ -83,7 +79,7 @@ class BloodPressureDetailViewModel(
    * [UiState.Error], which results in the snackbar being used to show the error message.
    */
   private suspend fun tryWithPermissionsCheck(block: suspend () -> Unit) {
-    permissionsGranted.value = healthConnectManager.hasAllPermissions(permissions)
+    permissionsGranted.value = healthConnectManager.hasAllPermissions(healthConnectManager.permissions)
     uiState = try {
       if (permissionsGranted.value) {
         block()

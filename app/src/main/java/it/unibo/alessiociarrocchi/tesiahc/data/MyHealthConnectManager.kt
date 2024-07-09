@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.HealthConnectClient.Companion.SDK_AVAILABLE
 import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import java.time.Instant
@@ -25,6 +26,11 @@ class MyHealthConnectManager(private val context: Context) {
 
   var availability = mutableStateOf(HealthConnectAvailability.NOT_SUPPORTED)
     private set
+
+  val permissions = setOf(
+    HealthPermission.getReadPermission(BloodPressureRecord::class),
+    HealthPermission.getReadPermission(HeartRateRecord::class)
+  )
 
   init {
     checkAvailability()

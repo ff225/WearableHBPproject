@@ -12,18 +12,18 @@ private const val DATABASE_NAME = "tesiahc_database"
     [
         MyBloodPressureEntity::class,
         MyHeartRateAggregateEntity::class,
-        MyLocationEntity::class,
+        //MyLocationEntity::class,
         MySleepSegmentEventEntity::class,
         MySleepClassifyEventEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class MyLocalDatabase : RoomDatabase() {
 
     abstract fun bpDao(): MyBloodPressureDao
     abstract fun bpHRDao(): MyHeartRateAggregateDao
-    abstract fun locationDao(): MyLocationDao
+    //abstract fun locationDao(): MyLocationDao
     abstract fun sleepSegmentEventDao(): MySleepSegmentEventDao
     abstract fun sleepClassifyEventDao(): MySleepClassifyEventDao
 
@@ -38,8 +38,6 @@ abstract class MyLocalDatabase : RoomDatabase() {
                     MyLocalDatabase::class.java,
                     DATABASE_NAME
                 )
-                    // Wipes and rebuilds instead of migrating if no Migration object.
-                    // Migration is not part of this sample.
                     .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()
                     .build()

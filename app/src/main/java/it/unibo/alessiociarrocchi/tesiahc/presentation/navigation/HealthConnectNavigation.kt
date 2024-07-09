@@ -12,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 //import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
+//import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.showExceptionSnackbar
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.WelcomeScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure.BloodPressureScreen
@@ -21,9 +21,9 @@ import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure.Bloo
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailViewModel
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailViewModelFactory
-import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationScreen
-import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModel
-import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModelFactory
+//import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationScreen
+//import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModel
+//import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModelFactory
 import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 
 /**
@@ -34,8 +34,8 @@ fun HealthConnectNavigation(
   navController: NavHostController,
   scaffoldState: ScaffoldState,
   applicationContext: android.content.Context,
-  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
-  myLocationRepository : MyLocationRepository
+  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager
+  //,myLocationRepository : MyLocationRepository
 ) {
   val scope = rememberCoroutineScope()
   NavHost(navController = navController, startDestination = Screen.WelcomeScreen.route) {
@@ -46,6 +46,7 @@ fun HealthConnectNavigation(
     composable(Screen.WelcomeScreen.route) {
       WelcomeScreen(
         healthConnectAvailability = availabilityHealthConnect,
+        healthConnectManager = healthConnectManager,
         onResumeAvailabilityCheck = {
           healthConnectManager.checkAvailability()
         },
@@ -74,7 +75,7 @@ fun HealthConnectNavigation(
       )
       val permissionsGranted by viewModel.permissionsGranted
       val sessionsList by viewModel.bpList
-      val permissions = viewModel.permissions
+      val permissions = healthConnectManager.permissions
       val onPermissionsResult = { viewModel.initialLoad() }
       val permissionsLauncher =
         rememberLauncherForActivityResult(viewModel.permissionsLauncher) {
@@ -113,7 +114,7 @@ fun HealthConnectNavigation(
         )
       )
       val permissionsGranted by viewModel.permissionsGranted
-      val permissions = viewModel.permissions
+      val permissions = healthConnectManager.permissions
       val onPermissionsResult = { viewModel.initialLoad() }
       val permissionsLauncher =
         rememberLauncherForActivityResult(viewModel.permissionsLauncher) {
@@ -147,7 +148,7 @@ fun HealthConnectNavigation(
     }
 
     // elenco posizioni gps
-    composable(Screen.ReadLocations.route){
+    /*composable(Screen.ReadLocations.route){
       val viewModel: LocationViewModel = viewModel(
         factory = LocationViewModelFactory(myLocationRepository)
       )
@@ -165,7 +166,7 @@ fun HealthConnectNavigation(
           showInfoSnackbar(scaffoldState, scope, "Lista aggiornata correttamente")
         }
       )
-    }
+    }*/
 
   }
 }

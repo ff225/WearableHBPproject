@@ -1,17 +1,24 @@
 package it.unibo.alessiociarrocchi.tesiahc.receivers
 
-import android.annotation.SuppressLint
 import  android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import androidx.core.app.NotificationCompat
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.services.HourNotificationService
-import it.unibo.alessiociarrocchi.tesiahc.services.LocationService
+//import it.unibo.alessiociarrocchi.tesiahc.services.LocationService
 
 class HourNotificationReceiver: BroadcastReceiver() {
+
+    companion object {
+        const val CHANNEL_ID = "AHC_hour_notification"
+        const val CHANNEL_NAME = "Tesi Health Connect: memo misurazione"
+        const val NOTIFICATION_ID = 1
+        const val REQUESTCODE = 1
+    }
 
     @Override
     override fun onReceive(context: Context, intent: Intent) {
@@ -27,17 +34,22 @@ class HourNotificationReceiver: BroadcastReceiver() {
         val notificationIntent = Intent(context, HourNotificationService::class.java)
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_MUTABLE);
+        val pendingIntent = PendingIntent.getActivity(context, REQUESTCODE, notificationIntent, PendingIntent.FLAG_MUTABLE);
 
 
-        val mNotifyBuilder = NotificationCompat.Builder(context, "AHC_hour_notification")
+        val mNotifyBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setWhen(mywhen)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-            .setContentTitle("Tesi Android Health Connect")
+            .setContentTitle("Samsung smartwatch")
             .setContentText("E' un buon momento per effettuare la misurazione della pressione arteriosa?")
 
-        notificationManager.notify(2, mNotifyBuilder.build())
+        notificationManager.notify(NOTIFICATION_ID, mNotifyBuilder.build())
 
+        val notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val r = RingtoneManager.getRingtone(context, notificationSound)
+        r.play()
     }
 }

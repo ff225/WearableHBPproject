@@ -16,7 +16,6 @@
   <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
   <application
-      android:allowBackup="false"
       android:enableOnBackInvokedCallback="true"
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
@@ -26,10 +25,6 @@
       android:theme="@style/Theme.HealthConnect"
       tools:targetApi="34"
       >
-    <service
-        android:name=".services.LocationService"
-        android:foregroundServiceType="location"
-        android:exported="false" />
 
     <activity
         android:name=".presentation.MainActivity"
@@ -49,15 +44,18 @@
       </intent-filter>
     </activity>
 
-    <receiver android:name=".receivers.LocationReceiver"
-        android:enabled="true"
-        android:exported="false">
-      <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED"/>
-        <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
-      </intent-filter>
-    </receiver>
+    <!--<service
+        android:name=".services.LocationService"
+        android:foregroundServiceType="location"
+        android:exported="false" />-->
+    <!--<service
+        android:name=".services.HealthDataService"
+        android:foregroundServiceType="location"
+        android:exported="false" />-->
 
+
+    <!--<receiver android:name=".receivers.LocationReceiver" />-->
+    <receiver android:name=".receivers.HealthDataReceiver"/>
     <receiver android:name=".receivers.HourNotificationReceiver"/>
 
   </application>

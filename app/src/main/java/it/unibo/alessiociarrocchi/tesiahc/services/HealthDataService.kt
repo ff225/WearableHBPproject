@@ -1,19 +1,21 @@
 package it.unibo.alessiociarrocchi.tesiahc.services
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import it.unibo.alessiociarrocchi.tesiahc.R
+import it.unibo.alessiociarrocchi.tesiahc.startForegroundMyNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
-class HourNotificationService : Service() {
+
+class HealthDataService: Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

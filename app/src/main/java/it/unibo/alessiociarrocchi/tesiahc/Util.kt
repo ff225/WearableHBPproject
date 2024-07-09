@@ -1,10 +1,16 @@
 package it.unibo.alessiociarrocchi.tesiahc
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Resources
+import android.graphics.BitmapFactory
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -12,11 +18,11 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import java.security.AccessController.getContext
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.temporal.ChronoField
@@ -148,3 +154,26 @@ fun Long?.toTime(): String {
 
 suspend fun <T> Flow<List<T>>.flattenToList(): List<T> =
   flatMapConcat { it.asFlow() }.toList()
+
+
+fun createNotificationChannel(context:Context, CHANNEL_ID: String, CHANNEL_NAME : String) : NotificationManager {
+  val notificationChannel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
+  val notificationManager = context.getSystemService(NotificationManager::class.java)
+  notificationManager.createNotificationChannel(notificationChannel)
+
+  return notificationManager
+}
+
+fun startForegroundMyNotification(context:Context, service: Service, CHANNEL_ID: String, NOTIFICATION_ID: Int, content: String, title:String, logo_small: Int, logo_big: Int) {
+  val res: Resources = context.getResources()
+
+  val notification = NotificationCompat.Builder(service, CHANNEL_ID)
+    .setSmallIcon(logo_small)
+    .setLargeIcon(BitmapFactory.decodeResource(res, logo_big))
+    .setShowWhen(true)
+    .setAutoCancel(true)
+    .setContentTitle(title)
+    .setContentText(content)
+    .build()
+  service.startForeground(NOTIFICATION_ID, notification)
+}
