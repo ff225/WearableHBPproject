@@ -5,6 +5,8 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager
@@ -20,6 +22,7 @@ class HealthDataReceiver: BroadcastReceiver() {
         const val REQUESTCODE = 2
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     @Override
     override fun onReceive(context: Context, intent: Intent) {
         /*val myIntent = Intent(context, HealthDataService::class.java)
@@ -47,7 +50,7 @@ class HealthDataReceiver: BroadcastReceiver() {
 
         // sincronizza dati
         val HCM = MyHealthConnectManager(context)
-        syncHeathData(HCM)
+        syncHeathData(HCM, context)
 
         // notifica di fine sincronizzazione
         val updatedNotification = mNotifyBuilder
@@ -55,6 +58,6 @@ class HealthDataReceiver: BroadcastReceiver() {
             .setWhen(System.currentTimeMillis())
 
         notificationManager.notify(NOTIFICATION_ID, updatedNotification.build())
-        notificationManager.cancel(NOTIFICATION_ID)
+        //notificationManager.cancel(NOTIFICATION_ID)
     }
 }

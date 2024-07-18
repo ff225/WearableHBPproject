@@ -1,6 +1,6 @@
 package it.unibo.alessiociarrocchi.tesiahc.services
 
-/*
+
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
@@ -15,6 +15,8 @@ import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
 import it.unibo.alessiociarrocchi.tesiahc.interfaces.LocationClient
 import it.unibo.alessiociarrocchi.tesiahc.presentation.BaseApplication
 import it.unibo.alessiociarrocchi.tesiahc.presentation.DefaultLocationClient
+import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
+import it.unibo.alessiociarrocchi.tesiahc.receivers.LocationReceiver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -56,7 +58,9 @@ class LocationService : Service() {
     }
 
     private fun start() {
-        notification = NotificationCompat.Builder(this, "AHC_location")
+        MainActivity.SERVIZIO_GPS = 1
+
+        notification = NotificationCompat.Builder(this, LocationReceiver.CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setShowWhen(true)
             .setAutoCancel(true)
@@ -67,7 +71,7 @@ class LocationService : Service() {
             Context.NOTIFICATION_SERVICE
         ) as NotificationManager
 
-        locationClient.getLocationUpdates(900000L) //15 minuti
+        locationClient.getLocationUpdates((15 * 60 * 1000)) //15 minuti
             .catch { e -> e.printStackTrace() }
             .onEach { location ->
                 //Log.d(TAG, location.latitude.toString() + " " + location.longitude.toString())
@@ -100,7 +104,7 @@ class LocationService : Service() {
             }
             .launchIn(serviceScope)
 
-        startForeground(3, notification.build())
+        startForeground(LocationReceiver.NOTIFICATION_ID, notification.build())
     }
 
     private fun SaveLocation(loc_latitude: Double, loc_longitude: Double, loc_time: Long){
@@ -117,12 +121,13 @@ class LocationService : Service() {
             .setContentText("Location: ${loc_latitude.toString()}, ${loc_longitude.toString()}")
             .setWhen(System.currentTimeMillis())
 
-        notificationManager.notify(3, updatedNotification.build())
+        notificationManager.notify(LocationReceiver.NOTIFICATION_ID, updatedNotification.build())
     }
 
     private fun stop() {
         stopForeground(true)
         stopSelf()
+        MainActivity.SERVIZIO_GPS = 0
     }
 
     override fun onDestroy() {
@@ -136,4 +141,3 @@ class LocationService : Service() {
     }
 
 }
-*/

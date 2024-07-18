@@ -1,9 +1,12 @@
 package it.unibo.alessiociarrocchi.tesiahc.data.db
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "my_blood_pressure_table")
+@Entity(tableName = "my_blood_pressure_table",
+    indices = [Index(value = ["uid"], unique = true)]
+)
 data class MyBloodPressureEntity (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -11,8 +14,10 @@ data class MyBloodPressureEntity (
     val systolic: Double,
     val diastolic: Double,
     val time: Long,
-    val timzone: Int,
+    val timezone: Int,
     val bodyPosition: Int,
     val measurementLocation: Int,
-    val description: String
+    val description: String,
+    val latitude: Double= 0.0,
+    val longitude: Double= 0.0
 )

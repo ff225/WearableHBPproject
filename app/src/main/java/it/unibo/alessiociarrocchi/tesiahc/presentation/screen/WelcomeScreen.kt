@@ -1,21 +1,15 @@
 package it.unibo.alessiociarrocchi.tesiahc.presentation.screen
 
-import android.annotation.SuppressLint
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -26,12 +20,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
@@ -42,6 +33,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import it.unibo.alessiociarrocchi.tesiahc.R
+import it.unibo.alessiociarrocchi.tesiahc.funcs.startLocationBackgroungService
 import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.InstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMessage
@@ -148,19 +140,16 @@ fun WelcomeScreen(
                 color = MaterialTheme.colors.onBackground,
                 fontWeight = FontWeight.Bold
               )
-              /*Text(
-                text = "(concedere manualmente permessi notifiche)",
-                color = MaterialTheme.colors.onBackground
-              )*/
               Spacer(modifier = Modifier.height(8.dp))
-              if(MainActivity.SERVIZIO_HEALTHDATA == "0") {
+              if(MainActivity.SERVIZIO_HEALTHDATA == 0) {
                 Button(
                   onClick = {
 
                     if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                       if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                         if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
-                          if(MainActivity.SERVIZIO_HEALTHDATA == "0"){
+                          if(MainActivity.SERVIZIO_HEALTHDATA == 0 || MainActivity.SERVIZIO_GPS == 0){
+                            startLocationBackgroungService(applicationContext)
                             startHealthDataSync(applicationContext)
                             showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente")
                           }
@@ -186,7 +175,7 @@ fun WelcomeScreen(
               }
               else{
                 Text(
-                  text = "Il servizio è già attivo",
+                  text = "Il servizio è attivo correttamente",
                   color = MaterialTheme.colors.onBackground
                 )
               }
@@ -199,6 +188,13 @@ fun WelcomeScreen(
               ){
                 Text("Concedi permessi notifiche")
               }
+
+              // avviso
+              Spacer(modifier = Modifier.height(8.dp))
+              Text(
+                text = "in caso di problemi concedere manualmente tutti i permessi",
+                color = MaterialTheme.colors.onBackground
+              )
             }
           }
           else{
@@ -219,6 +215,13 @@ fun WelcomeScreen(
           ){
             Text("Concedi permessi posizione GPS")
           }
+
+          // avviso
+          Spacer(modifier = Modifier.height(8.dp))
+          Text(
+            text = "in caso di problemi concedere manualmente tutti i permessi",
+            color = MaterialTheme.colors.onBackground
+          )
         }
 
       }
@@ -244,6 +247,13 @@ fun WelcomeScreen(
         ){
           Text("Concedi permessi Health Connect")
         }
+
+        // avviso
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+          text = "in caso di problemi concedere manualmente tutti i permessi",
+          color = MaterialTheme.colors.onBackground
+        )
       }
 
 

@@ -11,17 +11,23 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MyBloodPressureDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insert(item: MyBloodPressureEntity)
+    fun insert(item: MyBloodPressureEntity)
 
     @Update
-    suspend fun update(item: MyBloodPressureEntity)
+    fun update(item: MyBloodPressureEntity)
 
     @Delete
-    suspend fun delete(item: MyBloodPressureEntity)
+    fun delete(item: MyBloodPressureEntity)
 
     @Query("SELECT * from my_blood_pressure_table WHERE id = :id")
-    fun getBP(id: Int): Flow<MyBloodPressureEntity>
+    fun getItem(id: Int): MyBloodPressureEntity
 
-    @Query("SELECT * from my_blood_pressure_table ORDER BY id DESC")
+    @Query("SELECT * from my_blood_pressure_table WHERE uid = :uid")
+    fun getItemByExternalId(uid: String): MyBloodPressureEntity?
+
+    @Query("SELECT * from my_blood_pressure_table WHERE id = :id")
+    fun getFlowBP(id: Int): Flow<MyBloodPressureEntity>
+
+    @Query("SELECT * from my_blood_pressure_table ORDER BY time DESC")
     fun getAllBP(): Flow<List<MyBloodPressureEntity>>
 }

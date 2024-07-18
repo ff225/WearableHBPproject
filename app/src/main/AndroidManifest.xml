@@ -54,7 +54,7 @@
         android:exported="false" />-->
 
 
-    <!--<receiver android:name=".receivers.LocationReceiver" />-->
+    <receiver android:name=".receivers.LocationReceiver" />
     <receiver android:name=".receivers.HealthDataReceiver"/>
     <receiver android:name=".receivers.HourNotificationReceiver"/>
 

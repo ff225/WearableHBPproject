@@ -1,3 +1,4 @@
+
 package it.unibo.alessiociarrocchi.tesiahc.data.db
 
 import androidx.annotation.NonNull
@@ -23,3 +24,4 @@ data class MyLocationEntity(
     @ColumnInfo(name = "mydate")
     val mydate: Date= Date()
 )
+

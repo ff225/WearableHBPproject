@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import java.security.AccessController.getContext
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -28,7 +27,6 @@ import java.time.ZoneOffset
 import java.time.temporal.ChronoField
 import java.util.Date
 import java.util.Locale
-
 
 /**
  * Shows details of a given throwable in the snackbar
@@ -92,14 +90,7 @@ fun convertToLocalDateViaMilisecond(dateToConvert: Date): LocalDate {
     .toLocalDate()
 }
 
-fun Context.hasLocationPermission(): Boolean {
-  return ContextCompat.checkSelfPermission(
-    this, Manifest.permission.ACCESS_COARSE_LOCATION
-  ) == PackageManager.PERMISSION_GRANTED &&
-          ContextCompat.checkSelfPermission(
-            this, Manifest.permission.ACCESS_FINE_LOCATION
-          ) == PackageManager.PERMISSION_GRANTED
-}
+
 
 fun String?.toLong(): Long {
   val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())

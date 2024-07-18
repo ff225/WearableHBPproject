@@ -9,7 +9,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
-import it.unibo.alessiociarrocchi.tesiahc.hasLocationPermission
+import it.unibo.alessiociarrocchi.tesiahc.funcs.hasLocationPermission
 import it.unibo.alessiociarrocchi.tesiahc.interfaces.LocationClient
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

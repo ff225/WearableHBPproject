@@ -12,18 +12,18 @@ private const val DATABASE_NAME = "tesiahc_database"
     [
         MyBloodPressureEntity::class,
         MyHeartRateAggregateEntity::class,
-        //MyLocationEntity::class,
+        MyLocationEntity::class,
         MySleepSegmentEventEntity::class,
         MySleepClassifyEventEntity::class
     ],
-    version = 2,
+    version = 4,
     exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class MyLocalDatabase : RoomDatabase() {
 
     abstract fun bpDao(): MyBloodPressureDao
     abstract fun bpHRDao(): MyHeartRateAggregateDao
-    //abstract fun locationDao(): MyLocationDao
+    abstract fun locationDao(): MyLocationDao
     abstract fun sleepSegmentEventDao(): MySleepSegmentEventDao
     abstract fun sleepClassifyEventDao(): MySleepClassifyEventDao
 
