@@ -25,7 +25,7 @@ interface MyLocationDao {
     @Query("SELECT * FROM my_location_table ORDER BY mydate DESC LIMIT 1")
     fun getLastLocation(): MyLocationEntity
 
-    @Query("SELECT * FROM my_location_table WHERE date(mydate / 1000,'unixepoch') = date(:data / 1000,'unixepoch') ORDER BY mydate DESC LIMIT 1")
+    @Query("SELECT * FROM my_location_table WHERE date(mydate / 1000,'unixepoch') <= date(:data / 1000,'unixepoch') ORDER BY mydate DESC LIMIT 1")
     fun getLocationForMeasurement(data: Date): MyLocationEntity?
 
     @Update

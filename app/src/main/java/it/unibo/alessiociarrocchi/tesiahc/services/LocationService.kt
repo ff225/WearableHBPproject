@@ -12,9 +12,9 @@ import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocalDatabase
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
+import it.unibo.alessiociarrocchi.tesiahc.funcs.DefaultLocationClient
 import it.unibo.alessiociarrocchi.tesiahc.interfaces.LocationClient
 import it.unibo.alessiociarrocchi.tesiahc.presentation.BaseApplication
-import it.unibo.alessiociarrocchi.tesiahc.presentation.DefaultLocationClient
 import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
 import it.unibo.alessiociarrocchi.tesiahc.receivers.LocationReceiver
 import kotlinx.coroutines.CoroutineScope
@@ -122,6 +122,7 @@ class LocationService : Service() {
             .setWhen(System.currentTimeMillis())
 
         notificationManager.notify(LocationReceiver.NOTIFICATION_ID, updatedNotification.build())
+        notificationManager.cancel(LocationReceiver.NOTIFICATION_ID)
     }
 
     private fun stop() {

@@ -8,26 +8,20 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
-import android.os.Build
-import android.os.CancellationSignal
 import android.os.Looper
-import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.location.LocationManagerCompat
-import androidx.core.util.Consumer
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
+import it.unibo.alessiociarrocchi.tesiahc.interfaces.LocationClient
 import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
 import it.unibo.alessiociarrocchi.tesiahc.services.LocationService
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 //import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationTracker
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 fun Context.hasLocationPermission(): Boolean {
@@ -44,6 +38,58 @@ fun startLocationBackgroungService(context: Context){
         val myIntent = Intent(context, LocationService::class.java)
         context.startForegroundService(myIntent)
     }
+    MainActivity.SERVIZIO_GPS = 1
+}
+
+class DefaultLocationClient(
+    private val context: Context,
+    private val client: FusedLocationProviderClient
+) : LocationClient {
+
+    @SuppressLint("MissingPermission")
+    @Suppress("DEPRECATION")
+    override fun getLocationUpdates(interval: Long): Flow<Location> {
+        return callbackFlow {
+            if (!context.hasLocationPermission()) {
+                throw LocationClient.LocationException("Missing location permission")
+            }
+
+            val locationManager = context.getSystemService(
+                Context.LOCATION_SERVICE
+            ) as LocationManager
+            val isGpsEnabled = locationManager.isProviderEnabled(
+                LocationManager.GPS_PROVIDER
+            )
+            val isNetworkEnabled = locationManager.isProviderEnabled(
+                LocationManager.NETWORK_PROVIDER
+            )
+
+            if (!isGpsEnabled && !isNetworkEnabled)
+                throw LocationClient.LocationException("GPS is disabled")
+
+            val request = LocationRequest.create()
+                .setInterval(interval)
+                .setFastestInterval(interval)
+
+            val locationCallback = object : LocationCallback() {
+                override fun onLocationResult(result: LocationResult) {
+                    super.onLocationResult(result)
+                    result.locations.lastOrNull()?.let { location ->
+                        launch { send(location) }
+                    }
+                }
+            }
+
+            client.requestLocationUpdates(
+                request, locationCallback, Looper.getMainLooper()
+            )
+
+            awaitClose {
+                client.removeLocationUpdates(locationCallback)
+            }
+        }
+    }
+
 }
 
 /*

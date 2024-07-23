@@ -40,6 +40,8 @@ import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMes
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotSupportedMessage
 import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 import it.unibo.alessiociarrocchi.tesiahc.startHealthDataSync
+import it.unibo.alessiociarrocchi.tesiahc.startHealthReminder
+import it.unibo.alessiociarrocchi.tesiahc.syncHeathData
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import android.health.connect.HealthConnectManager as HCM
@@ -71,6 +73,7 @@ fun WelcomeScreen(
   )
 
   val scope = rememberCoroutineScope()
+
   val currentOnAvailabilityCheck by rememberUpdatedState(onResumeAvailabilityCheck)
 
   // Add a listener to re-check whether Health Connect has been installed each time the Welcome
@@ -141,43 +144,19 @@ fun WelcomeScreen(
                 fontWeight = FontWeight.Bold
               )
               Spacer(modifier = Modifier.height(8.dp))
-              if(MainActivity.SERVIZIO_HEALTHDATA == 0) {
-                Button(
-                  onClick = {
-
-                    if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                      if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                        if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
-                          if(MainActivity.SERVIZIO_HEALTHDATA == 0 || MainActivity.SERVIZIO_GPS == 0){
-                            startLocationBackgroungService(applicationContext)
-                            startHealthDataSync(applicationContext)
-                            showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente")
-                          }
-                          else{
-                            showInfoSnackbar(scaffoldState, scope, "Il servizio è già attivo")
-                          }
-                        }
-                        else{
-                          notificationPermission.launchPermissionRequest()
-                        }
-                      }
-                      else{
-                        coarseLocationPermission.launchPermissionRequest();
-                      }
-                    }
-                    else{
-                      fineLocationPermission.launchPermissionRequest();
-                    }
-
-                  }) {
-                  Text(text = "Avvia")
-                }
+              if(MainActivity.SERVIZIO_HEALTHDATA == 0 || MainActivity.SERVIZIO_GPS == 0 || MainActivity.SERVIZIO_HEALTHREM == 0) {
+                startLocationBackgroungService(applicationContext)
+                startHealthReminder(applicationContext)
+                startHealthDataSync(applicationContext)
+                showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente")
               }
               else{
                 Text(
                   text = "Il servizio è attivo correttamente",
                   color = MaterialTheme.colors.onBackground
                 )
+                Spacer(modifier = Modifier.height(32.dp))
+                printBtnSync(applicationContext, scaffoldState)
               }
             }
             else{
@@ -251,7 +230,7 @@ fun WelcomeScreen(
         // avviso
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-          text = "in caso di problemi concedere manualmente tutti i permessi",
+          text = "Se qualcosa va storto, concedere manualmente tutti i permessi richiesti.",
           color = MaterialTheme.colors.onBackground
         )
       }
@@ -262,3 +241,21 @@ fun WelcomeScreen(
   }
 }
 
+@Composable
+fun printBtnSync(applicationContext: android.content.Context,
+                 scaffoldState : ScaffoldState, ){
+  val scope = rememberCoroutineScope()
+  Button(
+    onClick = {
+
+      runBlocking {
+        launch {
+          syncHeathData(applicationContext)
+        }
+      }
+
+      showInfoSnackbar(scaffoldState, scope, "Lettura dati Health Connect conclusa con successo")
+    }) {
+    Text(text = "Lettura manuale Health Connect")
+  }
+}

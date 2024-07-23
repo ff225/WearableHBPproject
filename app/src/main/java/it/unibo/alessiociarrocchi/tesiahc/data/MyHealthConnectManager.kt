@@ -46,6 +46,13 @@ class MyHealthConnectManager(private val context: Context) {
     }
   }
 
+  fun Is_HC_Installed() : Boolean {
+    if ( HealthConnectClient.getSdkStatus(context) == SDK_AVAILABLE){
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Determines whether all the specified permissions are already granted. It is recommended to
    * call [PermissionController.getGrantedPermissions] first in the permissions flow, as if the

@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 //import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 //import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
@@ -21,6 +22,9 @@ import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure.Bloo
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailViewModel
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailViewModelFactory
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationScreen
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModel
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModelFactory
 //import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationScreen
 //import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModel
 //import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationViewModelFactory
@@ -34,8 +38,8 @@ fun HealthConnectNavigation(
   navController: NavHostController,
   scaffoldState: ScaffoldState,
   applicationContext: android.content.Context,
-  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager
-  //,myLocationRepository : MyLocationRepository
+  healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
+  myLocationRepository : MyLocationRepository
 ) {
   val scope = rememberCoroutineScope()
   NavHost(navController = navController, startDestination = Screen.WelcomeScreen.route) {
@@ -148,7 +152,7 @@ fun HealthConnectNavigation(
     }
 
     // elenco posizioni gps
-    /*composable(Screen.ReadLocations.route){
+    composable(Screen.ReadLocations.route){
       val viewModel: LocationViewModel = viewModel(
         factory = LocationViewModelFactory(myLocationRepository)
       )
@@ -166,7 +170,7 @@ fun HealthConnectNavigation(
           showInfoSnackbar(scaffoldState, scope, "Lista aggiornata correttamente")
         }
       )
-    }*/
+    }
 
   }
 }

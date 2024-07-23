@@ -9,9 +9,12 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.health.connect.client.records.BloodPressureRecord
 import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager
+import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 //import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationTracker
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
+import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
 //import it.unibo.alessiociarrocchi.tesiahc.funcs.OnLocationChangeListener
 //import it.unibo.alessiociarrocchi.tesiahc.funcs.getCurrentLocation
 import it.unibo.alessiociarrocchi.tesiahc.funcs.hasLocationPermission
@@ -36,7 +39,7 @@ fun startHealthDataSync(context: Context){
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.getTimeInMillis(),
-            (1000 * 60 * 2).toLong(), //15 min
+            (1000 * 60 * 15).toLong(), //15 min
             pendingIntent
         )
     }
@@ -59,9 +62,9 @@ fun startHealthReminder(context: Context){
     MainActivity.SERVIZIO_HEALTHREM = 1
 }
 
-@RequiresApi(Build.VERSION_CODES.S)
-fun syncHeathData(healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
-                  context: Context){
+fun syncHeathData(context: Context){
+
+    val healthConnectManager = MyHealthConnectManager(context)
 
     //TODO controllare il db, se ha dei valori sincronizzare gli ultimi 30 minuti, altrimenti gli ultimi 30 giorni
     val periodStart = Instant.now().minus(30, ChronoUnit.DAYS)
@@ -77,6 +80,7 @@ fun syncHeathData(healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.
     if (elencoPressioni != null){
         if (elencoPressioni!!.count() > 0){
             val bpRep = MyBloodPressureRepository.getInstance(context, Executors.newSingleThreadExecutor())
+            val hraRep = MyHeartRateRepository.getInstance(context, Executors.newSingleThreadExecutor())
             val locRep = MyLocationRepository.getInstance(context, Executors.newSingleThreadExecutor())
 
             for (item in elencoPressioni!!) {
@@ -89,36 +93,68 @@ fun syncHeathData(healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.
                         }
                         var myuid = item.metadata.id
 
-                        var myLocation = locRep.getLocationForMeasurement(timestampToLocalTimeZone(instantToLong(item.time), item.zoneOffset!!.totalSeconds))
+                        var myLocation = locRep.getLocationForMeasurement(item.time.toDate())
 
+                        var myLatitude : Double = 0.0
+                        var myLongitude : Double = 0.0
                         if (myLocation != null){
                             var myLatitude =  myLocation!!.latitude
                             var myLongitude = myLocation.longitude
+                        }
 
-                            val myBP = MyBloodPressureEntity(
-                                uid = myuid,
-                                systolic = item.systolic.inMillimetersOfMercury,
-                                diastolic = item.diastolic.inMillimetersOfMercury,
-                                time = instantToLong(item.time),
-                                timezone = myoffset,
-                                bodyPosition = item.bodyPosition,
-                                measurementLocation = item.measurementLocation,
-                                description = "",
-                                latitude = myLatitude,
-                                longitude = myLongitude
-                            )
+                        val myBP = MyBloodPressureEntity(
+                            uid = myuid,
+                            systolic = item.systolic.inMillimetersOfMercury,
+                            diastolic = item.diastolic.inMillimetersOfMercury,
+                            time = instantToLong(item.time),
+                            timezone = myoffset,
+                            bodyPosition = item.bodyPosition,
+                            measurementLocation = item.measurementLocation,
+                            description = "",
+                            latitude = myLatitude,
+                            longitude = myLongitude
+                        )
 
-                            bpRep.insertItem(myBP)
+                        bpRep.insertItem(myBP)
 
-                            // TODO salvare dati HR
-                            val savedItem = bpRep.getItemByExternalId(myuid)
-                            if (savedItem != null){
-                                if (savedItem.id > 0){
-                                    var test = bpRep.getAllItemsStream()
-                                    var bo = 0
+                        // TODO salvare dati HR
+                        val savedItem = bpRep.getItemByExternalId(myuid)
+                        if (savedItem != null){
+                            if (savedItem.id > 0){
+                                val hrStart = longtimeToInstant(savedItem.time, myBP.timezone).minus(30, ChronoUnit.MINUTES)
+                                val hrEnd = longtimeToInstant(savedItem.time, myBP.timezone)
+                                var hrAVG: Long = 0
+                                var hrMIN: Long = 0
+                                var hrMAX: Long = 0
+                                var hrMC: Long = 0
+                                runBlocking {
+                                    launch {
+                                        hrAVG = healthConnectManager.aggregateBPM_AVG(hrStart, hrEnd)
+                                        hrMIN = healthConnectManager.aggregateBPM_Min(hrStart, hrEnd)
+                                        hrMAX = healthConnectManager.aggregateBPM_Max(hrStart, hrEnd)
+                                        hrMC = healthConnectManager.aggregateMeasurements_Count(hrStart, hrEnd)
+
+                                    }
                                 }
+
+                                if (hrAVG > 0 && hrMIN > 0 && hrMAX > 0 && hrMC > 0){
+                                    val myHRA = MyHeartRateAggregateEntity(
+                                        coll_bp_id = savedItem.id,
+                                        hrStart = instantToLong(hrStart),
+                                        hrEnd = instantToLong(hrEnd),
+                                        timzone = myBP.timezone,
+                                        hrAVG = hrAVG,
+                                        hrMIN = hrMIN,
+                                        hrMAX = hrMAX,
+                                        hrMC = hrMC
+                                    )
+
+                                    hraRep.insertItem(myHRA)
+                                }
+
                             }
                         }
+
                     }
                 }
             }

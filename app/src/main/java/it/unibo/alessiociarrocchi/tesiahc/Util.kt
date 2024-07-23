@@ -1,22 +1,8 @@
 package it.unibo.alessiociarrocchi.tesiahc
 
-import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
-import android.content.Context
-import android.content.pm.PackageManager
-import android.content.res.Resources
-import android.graphics.BitmapFactory
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -63,6 +49,12 @@ fun instantToLong(myInstant : Instant): Long{
   return myInstant.getLong(ChronoField.INSTANT_SECONDS)
 }
 
+fun longtimeToInstant(myTime: Long, myTimeZone: Int): Instant{
+  val myinstant = Instant.ofEpochMilli(myTime)
+  val myLT = convertLongToDate(myinstant, myTimeZone)
+  return myLT.toInstant(ZoneOffset.ofTotalSeconds(myTimeZone))
+}
+
 //CONVERSIONE data ed ora dal db
 fun timestampToLocalTimeZone(myTime: Long, myTimeZone: Int): String{
   val myinstant = Instant.ofEpochMilli(myTime)
@@ -90,7 +82,10 @@ fun convertToLocalDateViaMilisecond(dateToConvert: Date): LocalDate {
     .toLocalDate()
 }
 
-
+fun Instant.toDate(): Date{
+  val myDate = Date.from(this)
+  return myDate
+}
 
 fun String?.toLong(): Long {
   val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -143,10 +138,8 @@ fun Long?.toTime(): String {
   }
 }
 
-suspend fun <T> Flow<List<T>>.flattenToList(): List<T> =
-  flatMapConcat { it.asFlow() }.toList()
 
-
+/*
 fun createNotificationChannel(context:Context, CHANNEL_ID: String, CHANNEL_NAME : String) : NotificationManager {
   val notificationChannel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
   val notificationManager = context.getSystemService(NotificationManager::class.java)
@@ -168,3 +161,5 @@ fun startForegroundMyNotification(context:Context, service: Service, CHANNEL_ID:
     .build()
   service.startForeground(NOTIFICATION_ID, notification)
 }
+ */
+

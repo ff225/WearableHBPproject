@@ -5,6 +5,7 @@ import android.content.Context
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocalDatabase
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
 import it.unibo.alessiociarrocchi.tesiahc.toDate
+import java.util.Date
 import java.util.concurrent.ExecutorService
 
 
@@ -28,8 +29,8 @@ class MyLocationRepository private constructor(
 
     fun getLastLocation(): MyLocationEntity = locationDao.getLastLocation()
 
-    fun getLocationForMeasurement(data: String): MyLocationEntity?{
-        return locationDao.getLocationForMeasurement(data.toDate())
+    fun getLocationForMeasurement(data: Date): MyLocationEntity?{
+        return locationDao.getLocationForMeasurement(data)
     }
 
     fun deleteLocation(id: Int){

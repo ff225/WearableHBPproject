@@ -12,6 +12,8 @@ import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager
 import it.unibo.alessiociarrocchi.tesiahc.services.HealthDataService
 import it.unibo.alessiociarrocchi.tesiahc.syncHeathData
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class HealthDataReceiver: BroadcastReceiver() {
 
@@ -22,7 +24,6 @@ class HealthDataReceiver: BroadcastReceiver() {
         const val REQUESTCODE = 2
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     @Override
     override fun onReceive(context: Context, intent: Intent) {
         /*val myIntent = Intent(context, HealthDataService::class.java)
@@ -48,9 +49,12 @@ class HealthDataReceiver: BroadcastReceiver() {
 
         notificationManager.notify(NOTIFICATION_ID, mNotifyBuilder.build())
 
-        // sincronizza dati
-        val HCM = MyHealthConnectManager(context)
-        syncHeathData(HCM, context)
+        // sincronizza dati health
+        runBlocking {
+            launch {
+                syncHeathData(context)
+            }
+        }
 
         // notifica di fine sincronizzazione
         val updatedNotification = mNotifyBuilder
@@ -58,6 +62,6 @@ class HealthDataReceiver: BroadcastReceiver() {
             .setWhen(System.currentTimeMillis())
 
         notificationManager.notify(NOTIFICATION_ID, updatedNotification.build())
-        //notificationManager.cancel(NOTIFICATION_ID)
+        notificationManager.cancel(NOTIFICATION_ID)
     }
 }
