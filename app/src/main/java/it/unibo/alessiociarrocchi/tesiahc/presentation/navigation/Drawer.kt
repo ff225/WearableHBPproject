@@ -87,7 +87,6 @@ fun Drawer(
         selected = item.route == currentRoute,
         onItemClick = {
           navController.navigate(item.route) {
-            // See: https://developer.android.com/jetpack/compose/navigation#nav-to-composable
             navController.graph.startDestinationRoute?.let { route ->
               popUpTo(route) {
                 saveState = true

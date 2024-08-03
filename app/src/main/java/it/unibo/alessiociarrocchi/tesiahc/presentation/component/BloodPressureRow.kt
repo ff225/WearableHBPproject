@@ -17,11 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.units.Pressure
 import it.unibo.alessiociarrocchi.tesiahc.R
+import it.unibo.alessiociarrocchi.tesiahc.convertToLocalDateViaMilisecond
 import it.unibo.alessiociarrocchi.tesiahc.presentation.theme.HealthConnectTheme
+import it.unibo.alessiociarrocchi.tesiahc.toDate
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.util.Date
 import java.util.UUID
 
 
@@ -30,12 +33,12 @@ import java.util.UUID
  */
 @Composable
 fun BloodPressureRow(
-  time: Instant,
-  zoneOffset: ZoneOffset?,
-  systolic: Pressure,
-  diastolic: Pressure,
-  uid: String,
-  onDetailsClick: (String) -> Unit = {},
+  time: Date,
+  zoneOffset: Int,
+  systolic: Double,
+  diastolic: Double,
+  id: Int,
+  onDetailsClick: (Int) -> Unit = {},
 ) {
   Row(
     modifier = Modifier
@@ -48,7 +51,7 @@ fun BloodPressureRow(
       modifier = Modifier
         .fillMaxWidth()
         .clickable {
-          onDetailsClick(uid)
+          onDetailsClick(id)
         }
     ) {
       /*Text(
@@ -58,11 +61,11 @@ fun BloodPressureRow(
       )*/
       Text(
         color = MaterialTheme.colors.primary,
-        text = it.unibo.alessiociarrocchi.tesiahc.localDateTimeToString(it.unibo.alessiociarrocchi.tesiahc.convertLongToDate(time, zoneOffset!!.totalSeconds)),
+        text = convertToLocalDateViaMilisecond(time, zoneOffset).toString(),
         style = MaterialTheme.typography.caption
       )
-      Text(stringResource(id=R.string.bp_systolic) + ": " + systolic.inMillimetersOfMercury.toString() + " mmHg")
-      Text(stringResource(id=R.string.bp_diastolic) + ": " + diastolic.inMillimetersOfMercury.toString() + " mmHg")
+      Text(stringResource(id=R.string.bp_systolic) + ": " + systolic.toString() + " mmHg")
+      Text(stringResource(id=R.string.bp_diastolic) + ": " + diastolic.toString() + " mmHg")
     }
   }
 }

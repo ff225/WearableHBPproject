@@ -44,14 +44,14 @@ fun LocationRow(
             },
             title = {
                 Text(
-                    text = "Delete Record",
+                    text = "Eliminazione riga",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
             },
             text = {
                 Text(
-                    "Do you want to delete record?",
+                    "Vuoi cancellare questa riga?",
                     fontSize = 16.sp
                 )
             },
@@ -62,7 +62,7 @@ fun LocationRow(
                         onLongClik(uid)
                         showAlertMessageLongClick.value=false
                     }) {
-                    Text("Yes", style = TextStyle(color = Color.Black))
+                    Text("Sì", style = TextStyle(color = Color.Black))
                 }
             },
             dismissButton = {

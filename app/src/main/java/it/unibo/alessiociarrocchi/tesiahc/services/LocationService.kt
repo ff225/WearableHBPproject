@@ -118,11 +118,12 @@ class LocationService : Service() {
             .addLocation(mylocation)
 
         val updatedNotification = notification
-            .setContentText("Location: ${loc_latitude.toString()}, ${loc_longitude.toString()}")
+            .setContentText("Posizione: ${loc_latitude.toString()}, ${loc_longitude.toString()}")
             .setWhen(System.currentTimeMillis())
 
         notificationManager.notify(LocationReceiver.NOTIFICATION_ID, updatedNotification.build())
-        notificationManager.cancel(LocationReceiver.NOTIFICATION_ID)
+        //notificationManager.cancel(LocationReceiver.NOTIFICATION_ID)
+        notificationManager.cancelAll()
     }
 
     private fun stop() {

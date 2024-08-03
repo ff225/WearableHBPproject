@@ -4,6 +4,8 @@ import android.content.Context
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureDao
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocalDatabase
+import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
+import it.unibo.alessiociarrocchi.tesiahc.toDate
 import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.ExecutorService
 
@@ -18,9 +20,21 @@ class MyBloodPressureRepository(
 
     fun getItemByExternalId(uid: String): MyBloodPressureEntity? = bpDao.getItemByExternalId(uid)
 
+    fun getItemsToday(today: String): List<MyBloodPressureEntity>{
+        return bpDao.getItemsToday(today.toDate())
+    }
+
+    fun getItemsByDates(dataInizio: String, dataFine: String): List<MyBloodPressureEntity>{
+        return bpDao.getBPByDates(dataInizio.toDate(), dataFine.toDate())
+    }
+
+    /*
+    fun getAllItems(): List<MyBloodPressureEntity> = bpDao.getAllBP()
+
     fun getAllItemsStream(): Flow<List<MyBloodPressureEntity>> = bpDao.getAllBP()
 
     fun getItemStream(id: Int): Flow<MyBloodPressureEntity?> = bpDao.getFlowBP(id)
+    */
 
     fun insertItem(item: MyBloodPressureEntity){
         executor.execute {
@@ -50,4 +64,6 @@ class MyBloodPressureRepository(
             }
         }
     }
+
+
 }

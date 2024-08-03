@@ -66,7 +66,7 @@ fun syncHeathData(context: Context){
 
     val healthConnectManager = MyHealthConnectManager(context)
 
-    //TODO controllare il db, se ha dei valori sincronizzare gli ultimi 30 minuti, altrimenti gli ultimi 30 giorni
+    // controllo gli ultimi 30 giorni, il massimo permesso da Health Connect
     val periodStart = Instant.now().minus(30, ChronoUnit.DAYS)
     val periodEnd = Instant.now()
 
@@ -106,7 +106,7 @@ fun syncHeathData(context: Context){
                             uid = myuid,
                             systolic = item.systolic.inMillimetersOfMercury,
                             diastolic = item.diastolic.inMillimetersOfMercury,
-                            time = instantToLong(item.time),
+                            time = item.time.toDate(),
                             timezone = myoffset,
                             bodyPosition = item.bodyPosition,
                             measurementLocation = item.measurementLocation,
@@ -117,12 +117,12 @@ fun syncHeathData(context: Context){
 
                         bpRep.insertItem(myBP)
 
-                        // TODO salvare dati HR
+                        // dati HR
                         val savedItem = bpRep.getItemByExternalId(myuid)
                         if (savedItem != null){
                             if (savedItem.id > 0){
-                                val hrStart = longtimeToInstant(savedItem.time, myBP.timezone).minus(30, ChronoUnit.MINUTES)
-                                val hrEnd = longtimeToInstant(savedItem.time, myBP.timezone)
+                                val hrStart =item.time.minus(30, ChronoUnit.MINUTES)
+                                val hrEnd = item.time
                                 var hrAVG: Long = 0
                                 var hrMIN: Long = 0
                                 var hrMAX: Long = 0
@@ -137,20 +137,18 @@ fun syncHeathData(context: Context){
                                     }
                                 }
 
-                                if (hrAVG > 0 && hrMIN > 0 && hrMAX > 0 && hrMC > 0){
-                                    val myHRA = MyHeartRateAggregateEntity(
-                                        coll_bp_id = savedItem.id,
-                                        hrStart = instantToLong(hrStart),
-                                        hrEnd = instantToLong(hrEnd),
-                                        timzone = myBP.timezone,
-                                        hrAVG = hrAVG,
-                                        hrMIN = hrMIN,
-                                        hrMAX = hrMAX,
-                                        hrMC = hrMC
-                                    )
+                                val myHRA = MyHeartRateAggregateEntity(
+                                    coll_bp_id = savedItem.id,
+                                    hrStart = hrStart.toDate(),
+                                    hrEnd = hrEnd.toDate(),
+                                    timzone = myBP.timezone,
+                                    hrAVG = hrAVG,
+                                    hrMIN = hrMIN,
+                                    hrMAX = hrMAX,
+                                    hrMC = hrMC
+                                )
 
-                                    hraRep.insertItem(myHRA)
-                                }
+                                hraRep.insertItem(myHRA)
 
                             }
                         }

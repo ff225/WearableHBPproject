@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutorService
 
 class MyLocationRepository private constructor(
     private val myLocationDatabase: MyLocalDatabase,
-    private val myLocationManager: MyLocationManager,
     private val executor: ExecutorService
 ) {
 
@@ -62,7 +61,6 @@ class MyLocationRepository private constructor(
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: MyLocationRepository(
                     MyLocalDatabase.getDatabase(context),
-                    MyLocationManager.getInstance(context),
                     executor)
                     .also { INSTANCE = it }
             }

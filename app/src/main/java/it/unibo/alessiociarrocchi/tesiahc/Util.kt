@@ -76,10 +76,15 @@ fun localDateTimeToString(_myZonedDT: LocalDateTime, _myFormat: String = ""): St
   return formatter.format(_myZonedDT)
 }
 
-fun convertToLocalDateViaMilisecond(dateToConvert: Date): LocalDate {
+fun convertToLocalDateViaMilisecond(dateToConvert: Date, tz: Int): LocalDateTime {
   return Instant.ofEpochMilli(dateToConvert.time)
-    .atZone(ZoneId.systemDefault())
-    .toLocalDate()
+    .atZone(ZoneOffset.ofTotalSeconds(tz))
+    .toLocalDateTime()
+}
+
+fun convertDateToLong(date: String): Long {
+  val df = SimpleDateFormat("yyyy.MM.dd HH:mm:ss")
+  return df.parse(date).time
 }
 
 fun Instant.toDate(): Date{
@@ -96,16 +101,6 @@ fun String?.toLong(): Long {
 fun String?.toDate(): Date {
   val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
   return formatter.parse(this)
-}
-
-fun String?.toLongDateStart(): Long {
-  val startDate = convertToLocalDateViaMilisecond(this.toDate()).atStartOfDay()
-  return startDate.toEpochSecond(ZoneOffset.UTC)
-}
-
-fun String?.toLongDateEnd(): Long {
-  val endDate = convertToLocalDateViaMilisecond(this.toDate()).plusDays(1).atStartOfDay()
-  return endDate.toEpochSecond(ZoneOffset.UTC)
 }
 
 fun Long?.toDate(): String {

@@ -5,15 +5,21 @@
   <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE"/>
   <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
   <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+  <uses-permission android:name="android.permission.BODY_SENSORS"/>
+  <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"
+      tools:ignore="HighSamplingRate" />
 
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH"/>
 
   <application
       android:enableOnBackInvokedCallback="true"
@@ -44,19 +50,27 @@
       </intent-filter>
     </activity>
 
-    <!--<service
+    <service
         android:name=".services.LocationService"
         android:foregroundServiceType="location"
-        android:exported="false" />-->
-    <!--<service
+        android:exported="false"
+        android:permission="android.permission.FOREGROUND_SERVICE_LOCATION"
+        />
+    <service
         android:name=".services.HealthDataService"
-        android:foregroundServiceType="location"
-        android:exported="false" />-->
+        android:exported="false"
+        android:foregroundServiceType="health"
+        android:permission="android.permission.FOREGROUND_SERVICE_HEALTH"
+        />
 
 
-    <receiver android:name=".receivers.LocationReceiver" />
-    <receiver android:name=".receivers.HealthDataReceiver"/>
-    <receiver android:name=".receivers.HourNotificationReceiver"/>
+    <receiver android:name=".receivers.LocationReceiver" android:enabled="true" android:exported="false">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name=".receivers.HealthDataReceiver" android:enabled="true" android:exported="false" />
+    <receiver android:name=".receivers.HourNotificationReceiver" android:enabled="true" android:exported="false" />
 
   </application>
 

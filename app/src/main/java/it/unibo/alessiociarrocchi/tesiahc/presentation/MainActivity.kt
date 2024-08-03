@@ -3,6 +3,8 @@ package it.unibo.alessiociarrocchi.tesiahc.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.funcs.hasLocationPermission
 import it.unibo.alessiociarrocchi.tesiahc.funcs.startLocationBackgroungService
@@ -70,10 +72,20 @@ class MainActivity : ComponentActivity()  {
       applicationContext, Executors.newSingleThreadExecutor()
     )
 
+    val bpRepository = MyBloodPressureRepository.getInstance(
+      applicationContext, Executors.newSingleThreadExecutor()
+    )
+
+    val hrRepository = MyHeartRateRepository.getInstance(
+      applicationContext, Executors.newSingleThreadExecutor()
+    )
+
     setContent {
       HealthConnectApp(
         healthConnectManager = healthConnectManager,
-        locationRepository = locationRepository,
+        myLocationRepository = locationRepository,
+        myBPRepository = bpRepository,
+        myHRRepository = hrRepository,
         applicationContext = mycontext)
     }
   }

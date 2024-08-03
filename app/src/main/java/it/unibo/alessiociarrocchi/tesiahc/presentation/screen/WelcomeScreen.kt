@@ -207,7 +207,7 @@ fun WelcomeScreen(
       else {
         Button(
           onClick ={
-            val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            /*val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
               // HCM is an import alias for HealthConnectManager from the Health Connect client
               Intent(HCM.ACTION_MANAGE_HEALTH_PERMISSIONS)
                 .putExtra(
@@ -218,7 +218,12 @@ fun WelcomeScreen(
               Intent(
                 HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
               )
-            }
+            }*/
+
+            val intent =Intent(
+              HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+            )
+
             startActivity(applicationContext, intent, null)
 
             healthConnectManager.requestPermissionsActivityContract()

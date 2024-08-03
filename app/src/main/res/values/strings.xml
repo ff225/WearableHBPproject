@@ -65,4 +65,6 @@
   <string name="read_sleep">Elenco misurazioni del sonno</string>
     <string name="latitudine">Latitudine</string>
   <string name="longitudine">Longitudine</string>
+  <string name="bp_latitudine">Latitudine</string>
+  <string name="bp_longitudine">Longitudine</string>
 </resources>

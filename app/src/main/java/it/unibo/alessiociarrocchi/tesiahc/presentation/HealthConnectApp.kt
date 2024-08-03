@@ -18,6 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import it.unibo.alessiociarrocchi.tesiahc.R
+import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 //import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.presentation.navigation.Drawer
@@ -32,7 +34,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun HealthConnectApp(
   healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
-  locationRepository: MyLocationRepository,
+  myLocationRepository : MyLocationRepository,
+  myBPRepository : MyBloodPressureRepository,
+  myHRRepository : MyHeartRateRepository,
   applicationContext: android.content.Context
 ) {
   HealthConnectTheme {
@@ -91,7 +95,9 @@ fun HealthConnectApp(
         scaffoldState = scaffoldState,
         applicationContext = applicationContext,
         healthConnectManager = healthConnectManager,
-        myLocationRepository = locationRepository
+        myLocationRepository = myLocationRepository,
+        myBPRepository = myBPRepository,
+        myHRRepository = myHRRepository
       )
     }
   }

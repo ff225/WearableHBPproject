@@ -15,12 +15,10 @@ import androidx.compose.ui.unit.dp
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
 
-/**
- * Displays content of heart rate measurements
- */
+
 @Composable
 fun BloodPressureDetail_HeartRate(
-  hrAggregate: MyHeartRateAggregateEntity,
+  hrAggregate: MyHeartRateAggregateEntity?,
 ) {
   Row(
     modifier = Modifier
@@ -35,12 +33,17 @@ fun BloodPressureDetail_HeartRate(
         text = stringResource(id = R.string.bp_detail_hr_title),
         style = MaterialTheme.typography.h6
       )
-      Text(stringResource(id = R.string.bp_detail_hr_start) + ": " + it.unibo.alessiociarrocchi.tesiahc.timestampToLocalTimeZone(hrAggregate.hrStart, hrAggregate.timzone))
-      Text(stringResource(id = R.string.bp_detail_hr_end) + ": " + it.unibo.alessiociarrocchi.tesiahc.timestampToLocalTimeZone(hrAggregate.hrEnd, hrAggregate.timzone))
-      Text(stringResource(id = R.string.bp_detail_hr_bpm_avg) + ": " + hrAggregate.hrAVG.toString() + " bpm")
-      Text(stringResource(id = R.string.bp_detail_hr_bpm_max) + ": " + hrAggregate.hrMAX.toString() + " bpm")
-      Text(stringResource(id = R.string.bp_detail_hr_bpm_min) + ": " + hrAggregate.hrMIN.toString() + " bpm")
-      Text(stringResource(id = R.string.bp_detail_hr_meas_count) + ": " + hrAggregate.hrMC.toString())
+      if(hrAggregate != null){
+        /*Text(stringResource(id = R.string.bp_detail_hr_start) + ": " + it.unibo.alessiociarrocchi.tesiahc.timestampToLocalTimeZone(hrAggregate.hrStart, hrAggregate.timzone))
+        Text(stringResource(id = R.string.bp_detail_hr_end) + ": " + it.unibo.alessiociarrocchi.tesiahc.timestampToLocalTimeZone(hrAggregate.hrEnd, hrAggregate.timzone))*/
+        Text(stringResource(id = R.string.bp_detail_hr_bpm_avg) + ": " + hrAggregate.hrAVG.toString() + " bpm")
+        Text(stringResource(id = R.string.bp_detail_hr_bpm_max) + ": " + hrAggregate.hrMAX.toString() + " bpm")
+        Text(stringResource(id = R.string.bp_detail_hr_bpm_min) + ": " + hrAggregate.hrMIN.toString() + " bpm")
+        Text(stringResource(id = R.string.bp_detail_hr_meas_count) + ": " + hrAggregate.hrMC.toString())
+      }
+      else{
+        Text("Nessun dato")
+      }
     }
   }
 }

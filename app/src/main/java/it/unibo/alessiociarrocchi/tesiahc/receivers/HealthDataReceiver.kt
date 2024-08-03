@@ -29,6 +29,12 @@ class HealthDataReceiver: BroadcastReceiver() {
         /*val myIntent = Intent(context, HealthDataService::class.java)
         context.startForegroundService(myIntent)*/
 
+        val myIntent = Intent(context, HealthDataService::class.java).apply {
+            action = HealthDataService.ACTION_START
+        }
+        context.startForegroundService(myIntent)
+
+        /*
         // notifica di inizio sincronizzazione
         val mywhen = System.currentTimeMillis();
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager;
@@ -62,6 +68,8 @@ class HealthDataReceiver: BroadcastReceiver() {
             .setWhen(System.currentTimeMillis())
 
         notificationManager.notify(NOTIFICATION_ID, updatedNotification.build())
-        notificationManager.cancel(NOTIFICATION_ID)
+        //notificationManager.cancel(NOTIFICATION_ID)
+         */
+
     }
 }

@@ -35,10 +35,16 @@ fun Context.hasLocationPermission(): Boolean {
 
 fun startLocationBackgroungService(context: Context){
     if (MainActivity.SERVIZIO_GPS == 0){
+        /*
         val myIntent = Intent(context, LocationService::class.java)
         context.startForegroundService(myIntent)
+        */
+
+        val myIntent = Intent(context, LocationService::class.java).apply {
+            action = LocationService.ACTION_START
+        }
+        context.startForegroundService(myIntent)
     }
-    MainActivity.SERVIZIO_GPS = 1
 }
 
 class DefaultLocationClient(

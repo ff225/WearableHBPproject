@@ -10,6 +10,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 //import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -39,7 +41,9 @@ fun HealthConnectNavigation(
   scaffoldState: ScaffoldState,
   applicationContext: android.content.Context,
   healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
-  myLocationRepository : MyLocationRepository
+  myLocationRepository : MyLocationRepository,
+  myBPRepository : MyBloodPressureRepository,
+  myHRRepository : MyHeartRateRepository
 ) {
   val scope = rememberCoroutineScope()
   NavHost(navController = navController, startDestination = Screen.WelcomeScreen.route) {
@@ -71,39 +75,21 @@ fun HealthConnectNavigation(
     }*/
 
     // elenco delle misurazioni pressione del sangue
-    composable(Screen.ReadBP.route) {
+    composable(Screen.ReadBP.route){
       val viewModel: BloodPressureViewModel = viewModel(
-        factory = BloodPressureViewModelFactory(
-          healthConnectManager = healthConnectManager
-        )
+        factory = BloodPressureViewModelFactory(myBPRepository)
       )
-      val permissionsGranted by viewModel.permissionsGranted
-      val sessionsList by viewModel.bpList
-      val permissions = healthConnectManager.permissions
-      val onPermissionsResult = { viewModel.initialLoad() }
-      val permissionsLauncher =
-        rememberLauncherForActivityResult(viewModel.permissionsLauncher) {
-          onPermissionsResult()
-        }
-      BloodPressureScreen(
-        permissionsGranted = permissionsGranted,
-        permissions = permissions,
-        bpList = sessionsList,
-        uiState = viewModel.uiState,
-        onInsertClick = {
+      viewModel.initialLoad()
+      val sessionsList by viewModel.bpList.collectAsState()
 
-        },
+      BloodPressureScreen(
+        locList = sessionsList,
         onDetailsClick = {
-          uid -> navController.navigate(Screen.BloodPressureDetail.route + "/" + uid)
+            myid -> navController.navigate(Screen.BloodPressureDetail.route + "/" + myid)
         },
-        onError = { exception ->
-          showExceptionSnackbar(scaffoldState, scope, exception)
-        },
-        onPermissionsResult = {
-          viewModel.initialLoad()
-        },
-        onPermissionsLaunch = { values ->
-          permissionsLauncher.launch(values)
+        onConfirmFilters = {
+            dates -> viewModel.refreshWithFilters(dates)
+          showInfoSnackbar(scaffoldState, scope, "Lista aggiornata correttamente")
         }
       )
     }
@@ -114,42 +100,26 @@ fun HealthConnectNavigation(
       val viewModel: BloodPressureDetailViewModel = viewModel(
         factory = BloodPressureDetailViewModelFactory(
           uid = uid,
-          healthConnectManager = healthConnectManager
+          myBPRepository = myBPRepository,
+          myHRRepository = myHRRepository
         )
       )
-      val permissionsGranted by viewModel.permissionsGranted
-      val permissions = healthConnectManager.permissions
-      val onPermissionsResult = { viewModel.initialLoad() }
-      val permissionsLauncher =
-        rememberLauncherForActivityResult(viewModel.permissionsLauncher) {
-          onPermissionsResult()
-        }
+
+      viewModel.initialLoad()
 
       val myBP by viewModel.bpDetail
       val hrAggregate by viewModel.hrAggregate
 
       BloodPressureDetailScreen(
-        permissions = permissions,
-        permissionsGranted = permissionsGranted,
         myBP = myBP,
-        hrAggregate = hrAggregate,
-        uiState = viewModel.uiState,
-        onError = { exception ->
-          showExceptionSnackbar(scaffoldState, scope, exception)
-        },
-        onPermissionsResult = {
-          viewModel.initialLoad()
-        },
-        onPermissionsLaunch = { values ->
-          permissionsLauncher.launch(values)
-        }
+        hrAggregate = hrAggregate
       )
     }
 
     // elenco misurazioni sonno
-    composable(Screen.ReadSleep.route){
+    /*composable(Screen.ReadSleep.route){
 
-    }
+    }*/
 
     // elenco posizioni gps
     composable(Screen.ReadLocations.route){
