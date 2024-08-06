@@ -4,7 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -38,6 +40,7 @@ fun BloodPressureRow(
   systolic: Double,
   diastolic: Double,
   id: Int,
+  synced : Int,
   onDetailsClick: (Int) -> Unit = {},
 ) {
   Row(
@@ -66,6 +69,8 @@ fun BloodPressureRow(
       )
       Text(stringResource(id=R.string.bp_systolic) + ": " + systolic.toString() + " mmHg")
       Text(stringResource(id=R.string.bp_diastolic) + ": " + diastolic.toString() + " mmHg")
+
+      BloodPressureSynced(synced)
     }
   }
 }

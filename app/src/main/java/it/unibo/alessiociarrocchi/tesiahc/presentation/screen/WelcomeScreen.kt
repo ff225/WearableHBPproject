@@ -38,6 +38,7 @@ import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.InstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotSupportedMessage
+import it.unibo.alessiociarrocchi.tesiahc.sendHeathData
 import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 import it.unibo.alessiociarrocchi.tesiahc.startHealthDataSync
 import it.unibo.alessiociarrocchi.tesiahc.startHealthReminder
@@ -144,11 +145,12 @@ fun WelcomeScreen(
                 fontWeight = FontWeight.Bold
               )
               Spacer(modifier = Modifier.height(8.dp))
+
               if(MainActivity.SERVIZIO_HEALTHDATA == 0 || MainActivity.SERVIZIO_GPS == 0 || MainActivity.SERVIZIO_HEALTHREM == 0) {
                 startLocationBackgroungService(applicationContext)
                 startHealthReminder(applicationContext)
                 startHealthDataSync(applicationContext)
-                showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente")
+                showInfoSnackbar(scaffoldState, scope, "Servizio avviato correttamente...")
               }
               else{
                 Text(
@@ -158,6 +160,21 @@ fun WelcomeScreen(
                 Spacer(modifier = Modifier.height(32.dp))
                 printBtnSync(applicationContext, scaffoldState)
               }
+
+              // bottone sincronizzazione con Firestore
+              Spacer(modifier = Modifier.height(32.dp))
+              Button(
+                onClick = {
+                  runBlocking {
+                    launch {
+                      sendHeathData(applicationContext)
+                    }
+                  }
+                  showInfoSnackbar(scaffoldState, scope, "Invio concluso con successo")
+                }) {
+                Text(text = "Invia i dati a firestore")
+              }
+
             }
             else{
               Button(
@@ -168,12 +185,7 @@ fun WelcomeScreen(
                 Text("Concedi permessi notifiche")
               }
 
-              // avviso
-              Spacer(modifier = Modifier.height(8.dp))
-              Text(
-                text = "in caso di problemi concedere manualmente tutti i permessi",
-                color = MaterialTheme.colors.onBackground
-              )
+              printAvviso()
             }
           }
           else{
@@ -195,14 +207,8 @@ fun WelcomeScreen(
             Text("Concedi permessi posizione GPS")
           }
 
-          // avviso
-          Spacer(modifier = Modifier.height(8.dp))
-          Text(
-            text = "in caso di problemi concedere manualmente tutti i permessi",
-            color = MaterialTheme.colors.onBackground
-          )
+          printAvviso()
         }
-
       }
       else {
         Button(
@@ -232,12 +238,7 @@ fun WelcomeScreen(
           Text("Concedi permessi Health Connect")
         }
 
-        // avviso
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-          text = "Se qualcosa va storto, concedere manualmente tutti i permessi richiesti.",
-          color = MaterialTheme.colors.onBackground
-        )
+        printAvviso()
       }
 
 
@@ -263,4 +264,14 @@ fun printBtnSync(applicationContext: android.content.Context,
     }) {
     Text(text = "Lettura manuale Health Connect")
   }
+}
+
+@Composable
+fun printAvviso(){
+  // avviso
+  Spacer(modifier = Modifier.height(8.dp))
+  Text(
+    text = "Se qualcosa va storto, concedere manualmente tutti i permessi richiesti.",
+    color = MaterialTheme.colors.onBackground
+  )
 }

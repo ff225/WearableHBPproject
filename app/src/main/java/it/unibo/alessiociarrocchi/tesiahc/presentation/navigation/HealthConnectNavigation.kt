@@ -112,7 +112,9 @@ fun HealthConnectNavigation(
 
       BloodPressureDetailScreen(
         myBP = myBP,
-        hrAggregate = hrAggregate
+        hrAggregate = hrAggregate,
+        applicationContext = applicationContext,
+        scaffoldState = scaffoldState
       )
     }
 

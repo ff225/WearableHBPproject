@@ -28,11 +28,6 @@ fun BloodPressureDetail_HeartRate(
     horizontalArrangement = Arrangement.Start
   ) {
     Column() {
-      Text(
-        color = MaterialTheme.colors.primaryVariant,
-        text = stringResource(id = R.string.bp_detail_hr_title),
-        style = MaterialTheme.typography.h6
-      )
       if(hrAggregate != null){
         /*Text(stringResource(id = R.string.bp_detail_hr_start) + ": " + it.unibo.alessiociarrocchi.tesiahc.timestampToLocalTimeZone(hrAggregate.hrStart, hrAggregate.timzone))
         Text(stringResource(id = R.string.bp_detail_hr_end) + ": " + it.unibo.alessiociarrocchi.tesiahc.timestampToLocalTimeZone(hrAggregate.hrEnd, hrAggregate.timzone))*/

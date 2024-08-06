@@ -45,4 +45,6 @@ interface MyBloodPressureDao {
     @Query("SELECT * FROM my_blood_pressure_table WHERE date(time / 1000,'unixepoch') = date(:today / 1000,'unixepoch') ORDER BY time DESC")
     fun getItemsToday(today: Date): List<MyBloodPressureEntity>
 
+    @Query("SELECT * from my_blood_pressure_table WHERE synced=0 ORDER BY time ASC")
+    fun getBPBUnsynced(): List<MyBloodPressureEntity>
 }

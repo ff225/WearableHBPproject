@@ -18,7 +18,7 @@ interface MyHeartRateAggregateDao {
     fun getAllHRA(): List<MyHeartRateAggregateEntity>
 
     @Query("SELECT * FROM my_heartrate_aggregate WHERE coll_bp_id=(:coll_bp_id)")
-    fun getHRA_ByBP(coll_bp_id: Int): MyHeartRateAggregateEntity
+    fun getHRA_ByBP(coll_bp_id: Int): MyHeartRateAggregateEntity?
 
     @Query("SELECT * FROM my_heartrate_aggregate WHERE id=(:id)")
     fun getItem(id: Int): MyHeartRateAggregateEntity

@@ -28,6 +28,10 @@ class MyBloodPressureRepository(
         return bpDao.getBPByDates(dataInizio.toDate(), dataFine.toDate())
     }
 
+    fun getItemsUnsynced(): List<MyBloodPressureEntity>{
+        return bpDao.getBPBUnsynced()
+    }
+
     /*
     fun getAllItems(): List<MyBloodPressureEntity> = bpDao.getAllBP()
 

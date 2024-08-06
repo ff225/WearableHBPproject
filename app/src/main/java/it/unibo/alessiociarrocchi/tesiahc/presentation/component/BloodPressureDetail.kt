@@ -3,7 +3,9 @@ package it.unibo.alessiociarrocchi.tesiahc.presentation.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -14,19 +16,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.convertToLocalDateViaMilisecond
-import java.util.Date
-
+import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
 
 @Composable
 fun BloodPressureDetail(
-  id: Int,
-  uid: String,
-  systolic: Double,
-  diastolic: Double,
-  time: Date,
-  zoneOffset: Int,
-  latitudine: Double,
-  longitudine: Double
+  bpDetail: MyBloodPressureEntity
 ) {
   Row(
     modifier = Modifier
@@ -37,31 +31,30 @@ fun BloodPressureDetail(
   ) {
     Column() {
       Text(
-        color = MaterialTheme.colors.primaryVariant,
-        text = stringResource(id = R.string.bp_detail_title),
-        style = MaterialTheme.typography.h5
-      )
-      Text(
         color = MaterialTheme.colors.primary,
-        text = "Id: " + id,
+        text = "Id: " + bpDetail.id,
         style = MaterialTheme.typography.caption
       )
       Text(
         color = MaterialTheme.colors.primary,
-        text = "Health Connect id: " + uid,
+        text = "Health Connect id: " + bpDetail.uid,
         style = MaterialTheme.typography.caption
       )
       Text(
         color = MaterialTheme.colors.secondary,
-        text = convertToLocalDateViaMilisecond(time, zoneOffset).toString(),
+        text = convertToLocalDateViaMilisecond(bpDetail.time, bpDetail.timezone).toString(),
         style = MaterialTheme.typography.h6
       )
-      Text(stringResource(id = R.string.bp_systolic) + ": " + systolic.toString() + " mmHg")
-      Text(stringResource(id = R.string.bp_diastolic) + ": " + diastolic.toString() + " mmHg")
+
+      BloodPressureSynced(bpDetail.synced)
+      Spacer(modifier = Modifier.height(8.dp))
+
+      Text(stringResource(id = R.string.bp_systolic) + ": " + bpDetail.systolic.toString() + " mmHg")
+      Text(stringResource(id = R.string.bp_diastolic) + ": " + bpDetail.diastolic.toString() + " mmHg")
       //Text(stringResource(id = R.string.bp_posizione_misurazione) + ": " + stringArrayResource(id=R.array.bp_posizioni_misurazione)[measurementLocation])
       //Text(stringResource(id = R.string.bp_posizione_corpo) + ": " + stringArrayResource(id=R.array.bp_posizioni_corpo)[bodyPosition])
-      Text(stringResource(id = R.string.bp_latitudine) + ": " + latitudine)
-      Text(stringResource(id = R.string.bp_longitudine) + ": " + longitudine)
+      Text(stringResource(id = R.string.bp_latitudine) + ": " + bpDetail.latitude)
+      Text(stringResource(id = R.string.bp_longitudine) + ": " + bpDetail.longitude)
     }
   }
 }

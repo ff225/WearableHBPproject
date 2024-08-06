@@ -43,6 +43,7 @@ fun BloodPressureScreen(
                 item.systolic,
                 item.diastolic,
                 item.id,
+                item.synced,
                 onDetailsClick = { myid ->
                     onDetailsClick(myid)
                 },

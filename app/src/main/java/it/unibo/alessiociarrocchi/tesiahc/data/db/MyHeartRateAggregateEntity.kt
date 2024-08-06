@@ -14,7 +14,7 @@ data class MyHeartRateAggregateEntity (
     val coll_bp_id: Int,
     val hrStart: Date,
     val hrEnd: Date,
-    val timzone: Int,
+    val timezone: Int,
     val hrAVG: Long,
     val hrMIN: Long,
     val hrMAX: Long,

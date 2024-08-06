@@ -18,7 +18,7 @@ class MyHeartRateRepository(
 
     fun getItem(id: Int): MyHeartRateAggregateEntity = hrDao.getItem(id)
 
-    fun getItemByExternalId(uid: Int): MyHeartRateAggregateEntity = hrDao.getHRA_ByBP(uid)
+    fun getItemByExternalId(uid: Int): MyHeartRateAggregateEntity? = hrDao.getHRA_ByBP(uid)
 
     fun getItems(): List<MyHeartRateAggregateEntity>{
         return hrDao.getAllHRA()

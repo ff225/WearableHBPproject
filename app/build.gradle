@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.devtools.ksp'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -61,7 +62,7 @@ dependencies {
     // For viewmodel support
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     annotationProcessor 'com.android.databinding:compiler:3.1.4'
     implementation 'androidx.appcompat:appcompat:1.7.0'
@@ -106,5 +107,9 @@ dependencies {
 
     // permessi
     implementation "com.google.accompanist:accompanist-permissions:0.33.1-alpha"
+
+    // firestore
+    implementation platform('com.google.firebase:firebase-bom:33.1.2')
+    implementation "com.google.firebase:firebase-firestore"
 
 }

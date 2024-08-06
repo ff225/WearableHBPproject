@@ -18,7 +18,8 @@ data class MyBloodPressureEntity (
     val timezone: Int,
     val bodyPosition: Int,
     val measurementLocation: Int,
-    val description: String,
+    var description: String,
     val latitude: Double= 0.0,
-    val longitude: Double= 0.0
+    val longitude: Double= 0.0,
+    var synced: Int = 0
 )
