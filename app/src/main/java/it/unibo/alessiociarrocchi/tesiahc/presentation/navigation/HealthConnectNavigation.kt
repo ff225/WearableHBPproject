@@ -1,6 +1,5 @@
 package it.unibo.alessiociarrocchi.tesiahc.presentation.navigation
 
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -14,9 +13,7 @@ import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 //import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
 //import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
-import it.unibo.alessiociarrocchi.tesiahc.showExceptionSnackbar
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.WelcomeScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure.BloodPressureScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure.BloodPressureViewModel
@@ -45,6 +42,7 @@ fun HealthConnectNavigation(
   myBPRepository : MyBloodPressureRepository,
   myHRRepository : MyHeartRateRepository
 ) {
+
   val scope = rememberCoroutineScope()
   NavHost(navController = navController, startDestination = Screen.WelcomeScreen.route) {
 
@@ -60,19 +58,9 @@ fun HealthConnectNavigation(
         },
         applicationContext = applicationContext,
         scaffoldState = scaffoldState,
+        scope = scope
       )
     }
-
-    /*composable(
-      route = Screen.PrivacyPolicy.route,
-      deepLinks = listOf(
-        navDeepLink {
-          action = "androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE"
-        }
-      )
-    ) {
-      PrivacyPolicyScreen()
-    }*/
 
     // elenco delle misurazioni pressione del sangue
     composable(Screen.ReadBP.route){
@@ -89,7 +77,7 @@ fun HealthConnectNavigation(
         },
         onConfirmFilters = {
             dates -> viewModel.refreshWithFilters(dates)
-          showInfoSnackbar(scaffoldState, scope, "Lista aggiornata correttamente")
+            showInfoSnackbar(scaffoldState, scope, "Lista aggiornata correttamente")
         }
       )
     }
@@ -113,8 +101,12 @@ fun HealthConnectNavigation(
       BloodPressureDetailScreen(
         myBP = myBP,
         hrAggregate = hrAggregate,
+        onGoBack = {
+          navController.navigate(Screen.ReadBP.route)
+        },
         applicationContext = applicationContext,
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+        scope = scope
       )
     }
 

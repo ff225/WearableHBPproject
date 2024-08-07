@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,17 +21,17 @@ import it.unibo.alessiociarrocchi.tesiahc.R
 fun BloodPressureSynced(
     synced: Int
 ){
-    Row(
+    Column(
         modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.Start
+            .fillMaxWidth()
     ){
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Row(
             modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ){
 
             var img_bpSynced = R.drawable.not_synced
@@ -48,7 +47,7 @@ fun BloodPressureSynced(
                 contentDescription = bpSynced,
                 contentScale = ContentScale.Fit
             )
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = bpSynced,
                 style = MaterialTheme.typography.caption

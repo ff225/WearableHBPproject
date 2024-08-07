@@ -5,6 +5,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.compose.material.ScaffoldState
 import androidx.health.connect.client.records.BloodPressureRecord
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
@@ -20,6 +21,7 @@ import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
 import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HealthDataReceiver
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HourNotificationReceiver
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
@@ -113,7 +115,8 @@ fun syncHeathData(context: Context){
                             measurementLocation = item.measurementLocation,
                             description = "",
                             latitude = myLatitude,
-                            longitude = myLongitude
+                            longitude = myLongitude,
+                            synced = 0
                         )
 
                         bpRep.insertItem(myBP)
@@ -157,6 +160,9 @@ fun syncHeathData(context: Context){
                     }
                 }
             }
+
+            // invio dati BP a firestore
+            sendHeathData(context)
         }
     }
 
@@ -164,69 +170,73 @@ fun syncHeathData(context: Context){
 }
 
 fun sendHeathData(context: Context){
-    //TODO controllare se c'è la connessione internet
-    val bpRep = MyBloodPressureRepository.getInstance(context, Executors.newSingleThreadExecutor())
-    var elencoPressioni : List<MyBloodPressureEntity>? = null
-    runBlocking {
-        launch {
-            elencoPressioni = bpRep.getItemsUnsynced()
+    if(isOnline(context)){
+        val bpRep = MyBloodPressureRepository.getInstance(context, Executors.newSingleThreadExecutor())
+        var elencoPressioni : List<MyBloodPressureEntity>? = null
+        runBlocking {
+            launch {
+                elencoPressioni = bpRep.getItemsUnsynced()
+            }
         }
-    }
 
-    if (elencoPressioni != null) {
-        if (elencoPressioni!!.count() > 0) {
-            val db = Firebase.firestore
-            val hraRep = MyHeartRateRepository.getInstance(context, Executors.newSingleThreadExecutor())
-            for (item in elencoPressioni!!) {
+        if (elencoPressioni != null) {
+            if (elencoPressioni!!.count() > 0) {
+                val db = Firebase.firestore
+                val hraRep = MyHeartRateRepository.getInstance(context, Executors.newSingleThreadExecutor())
+                for (item in elencoPressioni!!) {
 
-                var myHR : MyHeartRateAggregateEntity?
-                myHR = hraRep.getItemByExternalId(item.id)
-                if(myHR == null){
-                    myHR = MyHeartRateAggregateEntity(
-                        coll_bp_id = 0,
-                        hrStart = "1970-1-1".toDate(),
-                        hrEnd =  "1970-1-1".toDate(),
-                        timezone = 0,
-                        hrAVG = 0,
-                        hrMIN = 0,
-                        hrMAX = 0,
-                        hrMC = 0
+                    var myHR : MyHeartRateAggregateEntity?
+                    myHR = hraRep.getItemByExternalId(item.id)
+                    if(myHR == null){
+                        myHR = MyHeartRateAggregateEntity(
+                            coll_bp_id = 0,
+                            hrStart = "1970-1-1".toDate(),
+                            hrEnd =  "1970-1-1".toDate(),
+                            timezone = 0,
+                            hrAVG = 0,
+                            hrMIN = 0,
+                            hrMAX = 0,
+                            hrMC = 0
+                        )
+                    }
+
+                    val bpToSync = hashMapOf(
+                        "metadataid" to item.uid,
+                        "systolic" to item.systolic,
+                        "diastolic" to item.diastolic,
+                        "datetime" to item.time,
+                        "timezone" to item.timezone,
+                        "bodyPosition" to item.bodyPosition,
+                        "measurementLocation" to item.measurementLocation,
+                        "user_description" to item.description,
+                        "latitude" to item.latitude,
+                        "longitude" to item.longitude,
+                        "hrStart" to myHR.hrStart,
+                        "hrEnd" to myHR.hrEnd,
+                        "hrTimezone" to myHR.timezone,
+                        "hrAVG" to myHR.hrAVG,
+                        "hrMIN" to myHR.hrMIN,
+                        "hrMAX" to myHR.hrMAX,
+                        "hrMC" to myHR.hrMC,
                     )
+
+                    if(isOnline(context)){
+                        db.collection("bloodpressure")
+                            .add(bpToSync)
+                            .addOnSuccessListener { documentReference ->
+                                item.synced = 1
+                                bpRep.updateItem(item)
+                            }
+                            .addOnFailureListener { e ->
+
+                            }
+                    }
+
                 }
 
-                val bpToSync = hashMapOf(
-                    "metadataid" to item.uid,
-                    "systolic" to item.systolic,
-                    "diastolic" to item.diastolic,
-                    "datetime" to item.time,
-                    "timezone" to item.timezone,
-                    "bodyPosition" to item.bodyPosition,
-                    "measurementLocation" to item.measurementLocation,
-                    "user_description" to item.description,
-                    "latitude" to item.latitude,
-                    "longitude" to item.longitude,
-                    "hrStart" to myHR.hrStart,
-                    "hrEnd" to myHR.hrEnd,
-                    "hrTimezone" to myHR.timezone,
-                    "hrAVG" to myHR.hrAVG,
-                    "hrMIN" to myHR.hrMIN,
-                    "hrMAX" to myHR.hrMAX,
-                    "hrMC" to myHR.hrMC,
-                )
-
-                db.collection("bloodpressure")
-                    .add(bpToSync)
-                    .addOnSuccessListener { documentReference ->
-                        item.synced = 1
-                        bpRep.updateItem(item)
-                    }
-                    .addOnFailureListener { e ->
-
-                    }
             }
         }
     }
-
 }
 
 fun updateBloodPressureDesc(bpId: Int, description: String, context: Context){

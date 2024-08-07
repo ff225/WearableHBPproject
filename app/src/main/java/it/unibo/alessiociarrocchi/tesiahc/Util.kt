@@ -1,7 +1,12 @@
 package it.unibo.alessiociarrocchi.tesiahc
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.contentColorFor
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -13,22 +18,6 @@ import java.time.ZoneOffset
 import java.time.temporal.ChronoField
 import java.util.Date
 import java.util.Locale
-
-/**
- * Shows details of a given throwable in the snackbar
- */
-fun showExceptionSnackbar(
-  scaffoldState: ScaffoldState,
-  scope: CoroutineScope,
-  throwable: Throwable?,
-) {
-  scope.launch {
-    scaffoldState.snackbarHostState.showSnackbar(
-      message = throwable?.localizedMessage ?: "Unknown exception",
-      duration = SnackbarDuration.Short
-    )
-  }
-}
 
 fun showInfoSnackbar(
   scaffoldState: ScaffoldState,
@@ -43,48 +32,10 @@ fun showInfoSnackbar(
   }
 }
 
-
-//CONVERSIONE data ed ora per il db
-fun instantToLong(myInstant : Instant): Long{
-  return myInstant.getLong(ChronoField.INSTANT_SECONDS)
-}
-
-fun longtimeToInstant(myTime: Long, myTimeZone: Int): Instant{
-  val myinstant = Instant.ofEpochMilli(myTime)
-  val myLT = convertLongToDate(myinstant, myTimeZone)
-  return myLT.toInstant(ZoneOffset.ofTotalSeconds(myTimeZone))
-}
-
-//CONVERSIONE data ed ora dal db
-fun timestampToLocalTimeZone(myTime: Long, myTimeZone: Int): String{
-  val myinstant = Instant.ofEpochMilli(myTime)
-  val myLT = convertLongToDate(myinstant, myTimeZone)
-  return localDateTimeToString(myLT)
-}
-
-fun convertLongToDate(time: Instant, tz: Int): LocalDateTime {
-  return LocalDateTime.ofInstant(time, ZoneOffset.ofTotalSeconds(tz))
-}
-
-fun localDateTimeToString(_myZonedDT: LocalDateTime, _myFormat: String = ""): String{
-  var myFormat = _myFormat;
-  if (myFormat == ""){
-    myFormat = "dd/MM/yyyy HH:mm:ss"
-  }
-
-  val formatter: SimpleDateFormat = SimpleDateFormat(myFormat, Locale.getDefault())
-  return formatter.format(_myZonedDT)
-}
-
 fun convertToLocalDateViaMilisecond(dateToConvert: Date, tz: Int): LocalDateTime {
   return Instant.ofEpochMilli(dateToConvert.time)
     .atZone(ZoneOffset.ofTotalSeconds(tz))
     .toLocalDateTime()
-}
-
-fun convertDateToLong(date: String): Long {
-  val df = SimpleDateFormat("yyyy.MM.dd HH:mm:ss")
-  return df.parse(date).time
 }
 
 fun Instant.toDate(): Date{
@@ -113,48 +64,25 @@ fun Long?.toDate(): String {
   }
 }
 
-fun Long?.toYear(): String {
-  val dateFormat = SimpleDateFormat("y", Locale.getDefault())
-  return try {
-    dateFormat.format(this)
-  } catch (t: Throwable) {
-    t.printStackTrace()
-    ""
+fun isOnline(context: Context): Boolean {
+  val connectivityManager =
+    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+  if (connectivityManager != null) {
+    val capabilities =
+      connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+    if (capabilities != null) {
+      if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+
+        return true
+      } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+
+        return true
+      } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+
+        return true
+      }
+    }
   }
+  return false
 }
-
-fun Long?.toTime(): String {
-  val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
-  return try {
-    timeFormat.format(this)
-  } catch (t: Throwable) {
-    t.printStackTrace()
-    ""
-  }
-}
-
-
-/*
-fun createNotificationChannel(context:Context, CHANNEL_ID: String, CHANNEL_NAME : String) : NotificationManager {
-  val notificationChannel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
-  val notificationManager = context.getSystemService(NotificationManager::class.java)
-  notificationManager.createNotificationChannel(notificationChannel)
-
-  return notificationManager
-}
-
-fun startForegroundMyNotification(context:Context, service: Service, CHANNEL_ID: String, NOTIFICATION_ID: Int, content: String, title:String, logo_small: Int, logo_big: Int) {
-  val res: Resources = context.getResources()
-
-  val notification = NotificationCompat.Builder(service, CHANNEL_ID)
-    .setSmallIcon(logo_small)
-    .setLargeIcon(BitmapFactory.decodeResource(res, logo_big))
-    .setShowWhen(true)
-    .setAutoCancel(true)
-    .setContentTitle(title)
-    .setContentText(content)
-    .build()
-  service.startForeground(NOTIFICATION_ID, notification)
-}
- */
 

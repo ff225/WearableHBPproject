@@ -40,15 +40,13 @@ fun BloodPressureDetail(
         text = "Health Connect id: " + bpDetail.uid,
         style = MaterialTheme.typography.caption
       )
-      Text(
-        color = MaterialTheme.colors.secondary,
-        text = convertToLocalDateViaMilisecond(bpDetail.time, bpDetail.timezone).toString(),
-        style = MaterialTheme.typography.h6
-      )
-
       BloodPressureSynced(bpDetail.synced)
       Spacer(modifier = Modifier.height(8.dp))
-
+      Text(
+        color = MaterialTheme.colors.secondary,
+        text = convertToLocalDateViaMilisecond(bpDetail.time, bpDetail.timezone).toString()
+      )
+      Spacer(modifier = Modifier.height(8.dp))
       Text(stringResource(id = R.string.bp_systolic) + ": " + bpDetail.systolic.toString() + " mmHg")
       Text(stringResource(id = R.string.bp_diastolic) + ": " + bpDetail.diastolic.toString() + " mmHg")
       //Text(stringResource(id = R.string.bp_posizione_misurazione) + ": " + stringArrayResource(id=R.array.bp_posizioni_misurazione)[measurementLocation])

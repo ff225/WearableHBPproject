@@ -2,13 +2,14 @@ package it.unibo.alessiociarrocchi.tesiahc.presentation.screen
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
@@ -34,6 +35,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.funcs.startLocationBackgroungService
+import it.unibo.alessiociarrocchi.tesiahc.isOnline
 import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.InstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMessage
@@ -43,9 +45,9 @@ import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 import it.unibo.alessiociarrocchi.tesiahc.startHealthDataSync
 import it.unibo.alessiociarrocchi.tesiahc.startHealthReminder
 import it.unibo.alessiociarrocchi.tesiahc.syncHeathData
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import android.health.connect.HealthConnectManager as HCM
 
 /**
  * Welcome screen shown when the app is first launched.
@@ -60,6 +62,7 @@ fun WelcomeScreen(
   lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
   applicationContext: android.content.Context,
   scaffoldState : ScaffoldState,
+  scope: CoroutineScope
 ) {
 
   val notificationPermission = rememberPermissionState(
@@ -72,8 +75,6 @@ fun WelcomeScreen(
   val coarseLocationPermission = rememberPermissionState(
     permission = android.Manifest.permission.ACCESS_COARSE_LOCATION
   )
-
-  val scope = rememberCoroutineScope()
 
   val currentOnAvailabilityCheck by rememberUpdatedState(onResumeAvailabilityCheck)
 
@@ -101,7 +102,8 @@ fun WelcomeScreen(
   Column(
     modifier = Modifier
       .fillMaxSize()
-      .padding(32.dp),
+      .padding(32.dp)
+      .verticalScroll(rememberScrollState()),
     verticalArrangement = Arrangement.Top,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
@@ -165,15 +167,20 @@ fun WelcomeScreen(
               Spacer(modifier = Modifier.height(32.dp))
               Button(
                 onClick = {
-                  runBlocking {
-                    launch {
-                      sendHeathData(applicationContext)
+                  if(isOnline(applicationContext)){
+                    runBlocking {
+                      launch {
+                        sendHeathData(applicationContext)
+                      }
                     }
+                    showInfoSnackbar(scaffoldState, scope, "Invio concluso con successo")
                   }
-                  showInfoSnackbar(scaffoldState, scope, "Invio concluso con successo")
+                  else{
+                    showInfoSnackbar(scaffoldState, scope, "Non sei connesso ad internet")
+                  }
                 }) {
-                Text(text = "Invia i dati a firestore")
-              }
+                  Text(text = "Forza invio a firestore")
+                }
 
             }
             else{
@@ -213,25 +220,10 @@ fun WelcomeScreen(
       else {
         Button(
           onClick ={
-            /*val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-              // HCM is an import alias for HealthConnectManager from the Health Connect client
-              Intent(HCM.ACTION_MANAGE_HEALTH_PERMISSIONS)
-                .putExtra(
-                  Intent.EXTRA_PACKAGE_NAME,
-                  applicationContext.packageName
-                )
-            } else {
-              Intent(
-                HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
-              )
-            }*/
-
             val intent =Intent(
               HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
             )
-
             startActivity(applicationContext, intent, null)
-
             healthConnectManager.requestPermissionsActivityContract()
           }
         ){
@@ -260,9 +252,9 @@ fun printBtnSync(applicationContext: android.content.Context,
         }
       }
 
-      showInfoSnackbar(scaffoldState, scope, "Lettura dati Health Connect conclusa con successo")
+      showInfoSnackbar(scaffoldState, scope, "Sincronizzazione con Health Connect conclusa con successo")
     }) {
-    Text(text = "Lettura manuale Health Connect")
+    Text(text = "Forza lettura Health Connect")
   }
 }
 
