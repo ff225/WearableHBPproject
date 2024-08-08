@@ -5,19 +5,16 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.contentColorFor
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.temporal.ChronoField
 import java.util.Date
 import java.util.Locale
+import android.graphics.Color as AndroidColor
 
 fun showInfoSnackbar(
   scaffoldState: ScaffoldState,
@@ -86,3 +83,6 @@ fun isOnline(context: Context): Boolean {
   return false
 }
 
+fun Color.Companion.fromHex(hex: String): Color {
+  return Color(AndroidColor.parseColor(hex))
+}

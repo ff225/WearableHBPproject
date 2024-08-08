@@ -25,10 +25,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
-import java.util.Date
 import java.util.concurrent.Executors
 
 
@@ -65,7 +63,7 @@ fun startHealthReminder(context: Context){
     MainActivity.SERVIZIO_HEALTHREM = 1
 }
 
-fun syncHeathData(context: Context){
+fun syncHealthData(context: Context){
 
     val healthConnectManager = MyHealthConnectManager(context)
 
@@ -162,14 +160,16 @@ fun syncHeathData(context: Context){
             }
 
             // invio dati BP a firestore
-            sendHeathData(context)
+            sendAllHealthData(context)
         }
     }
 
     //TODO salvare dati sonno
 }
 
-fun sendHeathData(context: Context){
+
+
+fun sendAllHealthData(context: Context){
     if(isOnline(context)){
         val bpRep = MyBloodPressureRepository.getInstance(context, Executors.newSingleThreadExecutor())
         var elencoPressioni : List<MyBloodPressureEntity>? = null
@@ -181,12 +181,104 @@ fun sendHeathData(context: Context){
 
         if (elencoPressioni != null) {
             if (elencoPressioni!!.count() > 0) {
-                val db = Firebase.firestore
                 val hraRep = MyHeartRateRepository.getInstance(context, Executors.newSingleThreadExecutor())
-                for (item in elencoPressioni!!) {
+                for (bpitem in elencoPressioni!!) {
+                    firestoreDocument(context, bpitem, bpRep, hraRep)
+                }
+            }
+        }
+    }
+}
 
+fun sendSingleHealthData(bpId: Int,
+                         context: Context, scaffoldState : ScaffoldState, scope: CoroutineScope,
+                         showMsg: Boolean) : Boolean{
+    var myout : Boolean = false
+    if(bpId > 0){
+        val bpRep = MyBloodPressureRepository.getInstance(context, Executors.newSingleThreadExecutor())
+        val bpitem = bpRep.getItem(bpId)
+        if (bpitem != null){
+            if (bpitem.synced == 0){
+                if(isOnline(context)){
+                    runBlocking {
+                        launch {
+                            firestoreDocument(context, bpitem, bpRep)
+                        }
+                    }
+                    myout = true
+                    if(showMsg){
+                        showInfoSnackbar(scaffoldState, scope, "Misurazione inviata correttamente")
+                    }
+                }
+                else{
+                    if(showMsg){
+                        showInfoSnackbar(scaffoldState, scope, "Internet non disponibile. Riprovare!")
+                    }
+                }
+            }
+            else{
+                if(showMsg){
+                    showInfoSnackbar(scaffoldState, scope, "Misurazione già sincronizzata")
+                }
+            }
+        }
+        else{
+            if(showMsg){
+                showInfoSnackbar(scaffoldState, scope, "Misurazione non valida. Uscire e riprovare!")
+            }
+        }
+    }
+    else{
+        if(showMsg){
+            showInfoSnackbar(scaffoldState, scope, "Errore id misurazione. Uscire e riprovare!")
+        }
+    }
+
+    return myout
+}
+
+private fun firestoreDocument(
+    context: Context, bpitem: MyBloodPressureEntity,
+    bpRep: MyBloodPressureRepository, hraRep: MyHeartRateRepository? = null){
+
+    val collezione = "bloodpressure"
+
+    if(isOnline(context)){
+        val db = Firebase.firestore
+
+        // controllo se la misurazione è già presente su firebase
+        db.collection(collezione)
+            .whereEqualTo("metadataid", bpitem.uid)
+            .get()
+            .addOnSuccessListener { documents ->
+                var canAdd = true;
+
+                if(documents != null){
+                    if(documents.count() > 0){
+                        canAdd = false;
+
+                        for(document in documents){
+                            if (document.getString("metadataid") == bpitem.uid &&
+                                document.getString("user_description") != bpitem.description){
+                                // aggiorno la descrizione della misurazione
+                                document.reference.update("user_description", bpitem.description)
+                            }
+                        }
+
+                        // aggiorno il flag nel db locale
+                        bpitem.synced = 1
+                        bpRep.updateItem(bpitem)
+                    }
+                }
+
+                if(canAdd){
+                    // salvo la misurazione
                     var myHR : MyHeartRateAggregateEntity?
-                    myHR = hraRep.getItemByExternalId(item.id)
+                    var myHRRep = hraRep
+                    if (myHRRep == null){
+                        myHRRep = MyHeartRateRepository.getInstance(context, Executors.newSingleThreadExecutor())
+                    }
+                    myHR = myHRRep.getItemByExternalId(bpitem.id)
                     if(myHR == null){
                         myHR = MyHeartRateAggregateEntity(
                             coll_bp_id = 0,
@@ -201,16 +293,16 @@ fun sendHeathData(context: Context){
                     }
 
                     val bpToSync = hashMapOf(
-                        "metadataid" to item.uid,
-                        "systolic" to item.systolic,
-                        "diastolic" to item.diastolic,
-                        "datetime" to item.time,
-                        "timezone" to item.timezone,
-                        "bodyPosition" to item.bodyPosition,
-                        "measurementLocation" to item.measurementLocation,
-                        "user_description" to item.description,
-                        "latitude" to item.latitude,
-                        "longitude" to item.longitude,
+                        "metadataid" to bpitem.uid,
+                        "systolic" to bpitem.systolic,
+                        "diastolic" to bpitem.diastolic,
+                        "datetime" to bpitem.time,
+                        "timezone" to bpitem.timezone,
+                        "bodyPosition" to bpitem.bodyPosition,
+                        "measurementLocation" to bpitem.measurementLocation,
+                        "user_description" to bpitem.description,
+                        "latitude" to bpitem.latitude,
+                        "longitude" to bpitem.longitude,
                         "hrStart" to myHR.hrStart,
                         "hrEnd" to myHR.hrEnd,
                         "hrTimezone" to myHR.timezone,
@@ -221,11 +313,11 @@ fun sendHeathData(context: Context){
                     )
 
                     if(isOnline(context)){
-                        db.collection("bloodpressure")
+                        db.collection(collezione)
                             .add(bpToSync)
                             .addOnSuccessListener { documentReference ->
-                                item.synced = 1
-                                bpRep.updateItem(item)
+                                bpitem.synced = 1
+                                bpRep.updateItem(bpitem)
                             }
                             .addOnFailureListener { e ->
 
@@ -235,15 +327,8 @@ fun sendHeathData(context: Context){
                 }
 
             }
-        }
-    }
-}
+            .addOnFailureListener { exception ->
 
-fun updateBloodPressureDesc(bpId: Int, description: String, context: Context){
-    val bpRep = MyBloodPressureRepository.getInstance(context, Executors.newSingleThreadExecutor())
-    val bpitem = bpRep.getItem(bpId)
-    if (bpitem != null){
-        bpitem.description = description
-        bpRep.updateItem(bpitem)
+            }
     }
 }

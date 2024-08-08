@@ -1,13 +1,17 @@
 package it.unibo.alessiociarrocchi.tesiahc.data
 
 import android.content.Context
+import androidx.compose.material.ScaffoldState
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureDao
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocalDatabase
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
+import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 import it.unibo.alessiociarrocchi.tesiahc.toDate
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class MyBloodPressureRepository(
     private val myDB: MyLocalDatabase,
@@ -69,5 +73,28 @@ class MyBloodPressureRepository(
         }
     }
 
+}
 
+fun updateBloodPressureDesc(bpId: Int, description: String,
+                            context: Context, scaffoldState : ScaffoldState, scope: CoroutineScope
+){
+    if(bpId > 0){
+        val bpRep = MyBloodPressureRepository.getInstance(context, Executors.newSingleThreadExecutor())
+        val bpitem = bpRep.getItem(bpId)
+        if (bpitem != null){
+            if(bpitem.description != description){
+                bpitem.synced = 0
+            }
+            bpitem.description = description
+            bpRep.updateItem(bpitem)
+
+            showInfoSnackbar(scaffoldState, scope, "Info salvate correttamente")
+        }
+        else{
+            showInfoSnackbar(scaffoldState, scope, "Misurazione non valida. Uscire e riprovare!")
+        }
+    }
+    else{
+        showInfoSnackbar(scaffoldState, scope, "Errore id misurazione. Uscire e riprovare!")
+    }
 }

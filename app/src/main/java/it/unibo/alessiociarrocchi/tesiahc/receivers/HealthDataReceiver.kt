@@ -1,19 +1,9 @@
 package it.unibo.alessiociarrocchi.tesiahc.receivers
 
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
-import it.unibo.alessiociarrocchi.tesiahc.R
-import it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager
 import it.unibo.alessiociarrocchi.tesiahc.services.HealthDataService
-import it.unibo.alessiociarrocchi.tesiahc.syncHeathData
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class HealthDataReceiver: BroadcastReceiver() {
 

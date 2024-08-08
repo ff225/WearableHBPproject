@@ -13,35 +13,38 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
+import it.unibo.alessiociarrocchi.tesiahc.data.updateBloodPressureDesc
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail_HeartRate
-import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
-import it.unibo.alessiociarrocchi.tesiahc.updateBloodPressureDesc
+import it.unibo.alessiociarrocchi.tesiahc.sendSingleHealthData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -49,13 +52,11 @@ fun BloodPressureDetailScreen(
   myBP: MyBloodPressureEntity?,
   hrAggregate: MyHeartRateAggregateEntity?,
   onGoBack: () -> Unit = {},
+  onReloadPage: () -> Unit = {},
   applicationContext: android.content.Context,
   scaffoldState : ScaffoldState,
   scope: CoroutineScope
 ) {
-
-  //var textDesc by rememberSaveable { mutableStateOf("") }
-
   Column(
     modifier = Modifier
       .fillMaxWidth()
@@ -95,9 +96,12 @@ fun BloodPressureDetailScreen(
         style = MaterialTheme.typography.h5
       )
       if(myBP != null){
-        //textDesc = myBP.description
         BloodPressureDetail(
-          myBP
+          myBP,
+          onReloadPage,
+          applicationContext,
+          scaffoldState,
+          scope
         )
       }
 
@@ -112,6 +116,7 @@ fun BloodPressureDetailScreen(
       )
 
       var textDesc by remember { mutableStateOf(myBP!!.description) }
+      val focusManager = LocalFocusManager.current
 
       // campo descrizione
       if (myBP != null){
@@ -126,6 +131,8 @@ fun BloodPressureDetailScreen(
           },
           label = { Text(text = "Descrizione misurazione") },
           placeholder ={ Text(text = "Descrivi brevemente dove è stata svolta la misurazione e cosa si stava facendo poco prima") },
+          keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+          keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -137,12 +144,17 @@ fun BloodPressureDetailScreen(
             onClick = {
               runBlocking {
                 launch {
-                  updateBloodPressureDesc(myBP.id, textDesc, applicationContext)
-
+                  updateBloodPressureDesc(myBP.id, textDesc, applicationContext, scaffoldState, scope)
                 }
               }
-              showInfoSnackbar(scaffoldState, scope, "Info salvate correttamente")
 
+              runBlocking{
+                launch{
+                  sendSingleHealthData(myBP.id, applicationContext, scaffoldState, scope, false)
+                }
+              }
+
+              onReloadPage()
             }) {
             Text(text = "Salva info")
           }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,10 +18,15 @@ import androidx.compose.ui.unit.dp
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.convertToLocalDateViaMilisecond
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun BloodPressureDetail(
-  bpDetail: MyBloodPressureEntity
+  bpDetail: MyBloodPressureEntity,
+  onReloadPage: () -> Unit = {},
+  applicationContext: android.content.Context,
+  scaffoldState : ScaffoldState,
+  scope: CoroutineScope
 ) {
   Row(
     modifier = Modifier
@@ -40,7 +46,7 @@ fun BloodPressureDetail(
         text = "Health Connect id: " + bpDetail.uid,
         style = MaterialTheme.typography.caption
       )
-      BloodPressureSynced(bpDetail.synced)
+      BloodPressureSynced(bpDetail.synced, bpDetail.id, onReloadPage, applicationContext, scaffoldState, scope)
       Spacer(modifier = Modifier.height(8.dp))
       Text(
         color = MaterialTheme.colors.secondary,

@@ -8,7 +8,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HealthDataReceiver
-import it.unibo.alessiociarrocchi.tesiahc.syncHeathData
+import it.unibo.alessiociarrocchi.tesiahc.syncHealthData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -67,7 +67,7 @@ class HealthDataService: Service() {
 
         runBlocking {
             launch {
-                syncHeathData(applicationContext)
+                syncHealthData(applicationContext)
             }
         }
 

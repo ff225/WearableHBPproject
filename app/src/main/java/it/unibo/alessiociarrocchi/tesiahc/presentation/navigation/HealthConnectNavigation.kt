@@ -78,7 +78,16 @@ fun HealthConnectNavigation(
         onConfirmFilters = {
             dates -> viewModel.refreshWithFilters(dates)
             showInfoSnackbar(scaffoldState, scope, "Lista aggiornata correttamente")
-        }
+        },
+        onReloadPage = {
+          navController.navigate(Screen.ReadBP.route) {
+            popUpTo(Screen.ReadBP.route) { inclusive = true }
+          }
+          //navController.navigate(Screen.BloodPressureDetail.route + "/" + uid)
+        },
+        applicationContext,
+        scaffoldState,
+        scope
       )
     }
 
@@ -102,7 +111,16 @@ fun HealthConnectNavigation(
         myBP = myBP,
         hrAggregate = hrAggregate,
         onGoBack = {
-          navController.navigate(Screen.ReadBP.route)
+          navController.navigate(Screen.ReadBP.route) {
+            popUpTo(Screen.BloodPressureDetail.route + "/" + uid) { inclusive = true }
+          }
+          //navController.navigate(Screen.ReadBP.route)
+        },
+        onReloadPage = {
+          navController.navigate(Screen.BloodPressureDetail.route + "/" + uid) {
+            popUpTo(Screen.BloodPressureDetail.route + "/" + uid) { inclusive = true }
+          }
+          //navController.navigate(Screen.BloodPressureDetail.route + "/" + uid)
         },
         applicationContext = applicationContext,
         scaffoldState = scaffoldState,

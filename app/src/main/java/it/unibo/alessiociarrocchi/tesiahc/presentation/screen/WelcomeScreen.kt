@@ -40,11 +40,11 @@ import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.InstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMessage
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotSupportedMessage
-import it.unibo.alessiociarrocchi.tesiahc.sendHeathData
+import it.unibo.alessiociarrocchi.tesiahc.sendAllHealthData
 import it.unibo.alessiociarrocchi.tesiahc.showInfoSnackbar
 import it.unibo.alessiociarrocchi.tesiahc.startHealthDataSync
 import it.unibo.alessiociarrocchi.tesiahc.startHealthReminder
-import it.unibo.alessiociarrocchi.tesiahc.syncHeathData
+import it.unibo.alessiociarrocchi.tesiahc.syncHealthData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -170,7 +170,7 @@ fun WelcomeScreen(
                   if(isOnline(applicationContext)){
                     runBlocking {
                       launch {
-                        sendHeathData(applicationContext)
+                        sendAllHealthData(applicationContext)
                       }
                     }
                     showInfoSnackbar(scaffoldState, scope, "Invio concluso con successo")
@@ -248,7 +248,7 @@ fun printBtnSync(applicationContext: android.content.Context,
 
       runBlocking {
         launch {
-          syncHeathData(applicationContext)
+          syncHealthData(applicationContext)
         }
       }
 
