@@ -4,8 +4,8 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import it.unibo.alessiociarrocchi.tesiahc.data.AppContainer
-import it.unibo.alessiociarrocchi.tesiahc.data.AppDataContainer
+//import it.unibo.alessiociarrocchi.tesiahc.data.AppContainer
+//import it.unibo.alessiociarrocchi.tesiahc.data.AppDataContainer
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HealthDataReceiver
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HourNotificationReceiver
 import it.unibo.alessiociarrocchi.tesiahc.receivers.LocationReceiver
@@ -15,7 +15,7 @@ class BaseApplication : Application() {
       it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager(this)
     }
 
-    lateinit var container: AppContainer
+    //lateinit var container: AppContainer
 
     override fun onCreate() {
         super.onCreate()
@@ -54,6 +54,6 @@ class BaseApplication : Application() {
         notificationManager2.createNotificationChannel(channel2)
 
 
-        container = AppDataContainer(/*this*/)
+        //container = AppDataContainer(/*this*/)
     }
 }

@@ -21,6 +21,7 @@ import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.MySettingsRepository
 //import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.presentation.navigation.Drawer
 import it.unibo.alessiociarrocchi.tesiahc.presentation.navigation.HealthConnectNavigation
@@ -37,6 +38,7 @@ fun HealthConnectApp(
   myLocationRepository : MyLocationRepository,
   myBPRepository : MyBloodPressureRepository,
   myHRRepository : MyHeartRateRepository,
+  mySettRepository : MySettingsRepository,
   applicationContext: android.content.Context
 ) {
   HealthConnectTheme {
@@ -53,10 +55,19 @@ fun HealthConnectApp(
       topBar = {
         TopAppBar(
           title = {
-            val titleId = when (currentRoute) {
+            var titleId = when (currentRoute) {
               Screen.ReadBP.route -> Screen.ReadBP.titleId
+              Screen.ReadLocations.route -> Screen.ReadLocations.titleId
+              Screen.BloodPressureDetail.route -> Screen.BloodPressureDetail.titleId
               else -> R.string.app_name
             }
+
+            if (currentRoute != null) {
+              if (currentRoute.startsWith(Screen.BloodPressureDetail.route)){
+                titleId = Screen.BloodPressureDetail.titleId
+              }
+            }
+
             Text(stringResource(titleId))
           },
           navigationIcon = {
@@ -97,7 +108,8 @@ fun HealthConnectApp(
         healthConnectManager = healthConnectManager,
         myLocationRepository = myLocationRepository,
         myBPRepository = myBPRepository,
-        myHRRepository = myHRRepository
+        myHRRepository = myHRRepository,
+        mySettRepository = mySettRepository
       )
     }
   }

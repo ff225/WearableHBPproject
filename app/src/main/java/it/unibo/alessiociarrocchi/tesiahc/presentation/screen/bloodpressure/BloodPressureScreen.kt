@@ -36,6 +36,7 @@ fun BloodPressureScreen(
         item(){
             DateTimeRangeDialogPicker(
                 dataInizio = Date(),
+                applicationContext = applicationContext,
                 onConfim = { dates ->
                     onConfirmFilters(dates)
                 }

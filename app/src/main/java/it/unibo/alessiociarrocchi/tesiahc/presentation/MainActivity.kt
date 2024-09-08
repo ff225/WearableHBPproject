@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.MySettingsRepository
 import it.unibo.alessiociarrocchi.tesiahc.funcs.hasLocationPermission
 import it.unibo.alessiociarrocchi.tesiahc.funcs.startLocationBackgroungService
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.InstalledMessage
@@ -68,6 +69,10 @@ class MainActivity : ComponentActivity()  {
       startHealthDataSync(mycontext)
     }
 
+    val settRepository = MySettingsRepository.getInstance(
+      applicationContext, Executors.newSingleThreadExecutor()
+    )
+
     val locationRepository = MyLocationRepository.getInstance(
       applicationContext, Executors.newSingleThreadExecutor()
     )
@@ -86,6 +91,7 @@ class MainActivity : ComponentActivity()  {
         myLocationRepository = locationRepository,
         myBPRepository = bpRepository,
         myHRRepository = hrRepository,
+        mySettRepository = settRepository,
         applicationContext = mycontext)
     }
   }

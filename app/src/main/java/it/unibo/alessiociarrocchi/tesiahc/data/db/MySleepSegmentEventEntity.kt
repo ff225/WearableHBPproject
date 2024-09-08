@@ -1,4 +1,4 @@
-package it.unibo.alessiociarrocchi.tesiahc.data.db
+/*package it.unibo.alessiociarrocchi.tesiahc.data.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -26,4 +26,4 @@ data class MySleepSegmentEventEntity(
             )
         }
     }
-}
+}*/

@@ -29,7 +29,7 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.concurrent.Executors
 
-
+// avvia il serivio di sincronizzazione con Health Connect
 fun startHealthDataSync(context: Context){
     if(MainActivity.SERVIZIO_HEALTHDATA == 0) {
         val calendar: Calendar = Calendar.getInstance()
@@ -47,6 +47,7 @@ fun startHealthDataSync(context: Context){
     MainActivity.SERVIZIO_HEALTHDATA = 1
 }
 
+// avvia il servizio di notifica "esegui misurazione"
 fun startHealthReminder(context: Context){
     if(MainActivity.SERVIZIO_HEALTHREM == 0){
         val calendar: Calendar = Calendar.getInstance()
@@ -63,6 +64,7 @@ fun startHealthReminder(context: Context){
     MainActivity.SERVIZIO_HEALTHREM = 1
 }
 
+// esegue la sincronizzazione con Health Connect
 fun syncHealthData(context: Context){
 
     val healthConnectManager = MyHealthConnectManager(context)
@@ -168,7 +170,7 @@ fun syncHealthData(context: Context){
 }
 
 
-
+// invia tutte le misurazioni presenti nel db e non sincronizzate a firestore
 fun sendAllHealthData(context: Context){
     if(isOnline(context)){
         val bpRep = MyBloodPressureRepository.getInstance(context, Executors.newSingleThreadExecutor())
@@ -190,6 +192,7 @@ fun sendAllHealthData(context: Context){
     }
 }
 
+// invia la singola misurazione a firestore
 fun sendSingleHealthData(bpId: Int,
                          context: Context, scaffoldState : ScaffoldState, scope: CoroutineScope,
                          showMsg: Boolean) : Boolean{
@@ -237,6 +240,7 @@ fun sendSingleHealthData(bpId: Int,
     return myout
 }
 
+// esegue la chiamata a firestore, inviando la misurazione e controllando che  l'id assegnato da health connect sia univoco
 private fun firestoreDocument(
     context: Context, bpitem: MyBloodPressureEntity,
     bpRep: MyBloodPressureRepository, hraRep: MyHeartRateRepository? = null){

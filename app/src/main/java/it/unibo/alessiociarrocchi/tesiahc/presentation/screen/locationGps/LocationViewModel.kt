@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.MySettingsRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.db.GetKey_FilterDataFine
+import it.unibo.alessiociarrocchi.tesiahc.data.db.GetKey_FilterDataInzio
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyLocationEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +15,10 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
 
-class LocationViewModel(private val myLocationRepository: MyLocationRepository) : ViewModel() {
+class LocationViewModel(
+    private val myLocationRepository: MyLocationRepository,
+    private val mySettRepository: MySettingsRepository
+) : ViewModel() {
 
     //val periodStart = Instant.now().minus(30, ChronoUnit.DAYS)
     //val periodEnd = Instant.now()
@@ -48,15 +54,32 @@ class LocationViewModel(private val myLocationRepository: MyLocationRepository) 
                 }
             }
             else{
-                refreshToday()
+                getFiltersOrToday()
             }
         }
         else{
-            refreshToday()
+            getFiltersOrToday()
         }
     }
 
-    private fun refreshToday(){
+    private fun getFiltersOrToday(){
+        var dfi = mySettRepository.getItem(GetKey_FilterDataInzio())
+        if (dfi != null){
+            if(dfi.valore != ""){
+                var myout : String = dfi.valore
+
+                var dff = mySettRepository.getItem(GetKey_FilterDataFine())
+                if (dff != null){
+                    if(dff.valore != ""){
+                        myout += "|" + dff.valore
+                    }
+                }
+
+                refreshWithFilters(myout)
+                return
+            }
+        }
+
         viewModelScope.launch {
             _locList.value = myLocationRepository.getLocationsToday(_currDate)
         }
@@ -71,12 +94,14 @@ class LocationViewModel(private val myLocationRepository: MyLocationRepository) 
 
 class LocationViewModelFactory(
     private val myLocationRepository: MyLocationRepository,
+    private val mySettRepository: MySettingsRepository,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LocationViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return LocationViewModel(
-                myLocationRepository = myLocationRepository
+                myLocationRepository = myLocationRepository,
+                mySettRepository = mySettRepository
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

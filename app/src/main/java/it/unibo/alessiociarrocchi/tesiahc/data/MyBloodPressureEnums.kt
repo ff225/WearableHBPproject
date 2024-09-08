@@ -1,4 +1,4 @@
-package it.unibo.alessiociarrocchi.tesiahc.data
+/*package it.unibo.alessiociarrocchi.tesiahc.data
 
 enum class BodyPositionType {
     BODY_POSITION_UNKNOWN,
@@ -14,4 +14,4 @@ enum class MeasurementLocationType {
     MEASUREMENT_LOCATION_RIGHT_WRIST,
     MEASUREMENT_LOCATION_LEFT_UPPER_ARM,
     MEASUREMENT_LOCATION_RIGHT_UPPER_ARM,
-}
+}*/

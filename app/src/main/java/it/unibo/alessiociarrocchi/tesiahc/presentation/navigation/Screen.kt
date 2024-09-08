@@ -13,10 +13,10 @@ const val UID_NAV_ARGUMENT = "uid"
  *     all screens in the navigation graph are intended to be directly reached from the menu).
  */
 enum class Screen(val route: String, val titleId: Int, val hasMenuItem: Boolean = true) {
-  WelcomeScreen("welcome_screen", R.string.welcome_screen, false),
+  WelcomeScreen("welcome_screen", R.string.welcome_screen),
   ReadBP("read_blood_pressure", R.string.read_blood_pressure),
   BloodPressureDetail("blood_pressure_detail", R.string.blood_pressure_detail, false),
   //ReadSleep("read_sleep", R.string.read_sleep),
-  ReadLocations("readlocations", R.string.read_locations),
+  ReadLocations("read_locations", R.string.read_locations),
   //PrivacyPolicy("privacy_policy", R.string.privacy_policy)
 }

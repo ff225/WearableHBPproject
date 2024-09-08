@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.MySettingsRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.db.GetKey_FilterDataFine
+import it.unibo.alessiociarrocchi.tesiahc.data.db.GetKey_FilterDataInzio
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,8 +14,10 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class BloodPressureViewModel(private val myBPRepository: MyBloodPressureRepository) :
-ViewModel() {
+class BloodPressureViewModel(
+    private val myBPRepository: MyBloodPressureRepository,
+    private val mySettRepository: MySettingsRepository
+) : ViewModel() {
 
     private val _bpList = MutableStateFlow(emptyList<MyBloodPressureEntity>())
     val bpList = _bpList.asStateFlow()
@@ -37,15 +42,32 @@ ViewModel() {
                 }
             }
             else{
-                refreshToday()
+                getFiltersOrToday()
             }
         }
         else{
-            refreshToday()
+            getFiltersOrToday()
         }
     }
 
-    private fun refreshToday(){
+    private fun getFiltersOrToday(){
+        var dfi = mySettRepository.getItem(GetKey_FilterDataInzio())
+        if (dfi != null){
+            if(dfi.valore != ""){
+                var myout : String = dfi.valore
+
+                var dff = mySettRepository.getItem(GetKey_FilterDataFine())
+                if (dff != null){
+                    if(dff.valore != ""){
+                        myout += "|" + dff.valore
+                    }
+                }
+
+                refreshWithFilters(myout)
+                return
+            }
+        }
+
         viewModelScope.launch {
             _bpList.value = myBPRepository.getItemsToday(_currDate)
         }
@@ -60,12 +82,14 @@ ViewModel() {
 
 class BloodPressureViewModelFactory(
     private val myBPRepository: MyBloodPressureRepository,
+    private val mySettRepository: MySettingsRepository,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(BloodPressureViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return BloodPressureViewModel(
-                myBPRepository = myBPRepository
+                myBPRepository = myBPRepository,
+                mySettRepository = mySettRepository
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

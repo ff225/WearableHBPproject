@@ -1,4 +1,4 @@
-package it.unibo.alessiociarrocchi.tesiahc.data.db
+/*package it.unibo.alessiociarrocchi.tesiahc.data.db
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -23,4 +23,4 @@ interface MySleepSegmentEventDao {
 
     @Query("DELETE FROM sleep_segment_events_table")
     suspend fun deleteAll()
-}
+}*/

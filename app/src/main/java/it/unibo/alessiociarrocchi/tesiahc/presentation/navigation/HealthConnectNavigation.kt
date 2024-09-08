@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.MySettingsRepository
 //import androidx.lifecycle.compose.collectAsStateWithLifecycle
 //import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.WelcomeScreen
@@ -40,7 +41,8 @@ fun HealthConnectNavigation(
   healthConnectManager: it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager,
   myLocationRepository : MyLocationRepository,
   myBPRepository : MyBloodPressureRepository,
-  myHRRepository : MyHeartRateRepository
+  myHRRepository : MyHeartRateRepository,
+  mySettRepository : MySettingsRepository
 ) {
 
   val scope = rememberCoroutineScope()
@@ -65,7 +67,7 @@ fun HealthConnectNavigation(
     // elenco delle misurazioni pressione del sangue
     composable(Screen.ReadBP.route){
       val viewModel: BloodPressureViewModel = viewModel(
-        factory = BloodPressureViewModelFactory(myBPRepository)
+        factory = BloodPressureViewModelFactory(myBPRepository, mySettRepository)
       )
       viewModel.initialLoad()
       val sessionsList by viewModel.bpList.collectAsState()
@@ -136,13 +138,14 @@ fun HealthConnectNavigation(
     // elenco posizioni gps
     composable(Screen.ReadLocations.route){
       val viewModel: LocationViewModel = viewModel(
-        factory = LocationViewModelFactory(myLocationRepository)
+        factory = LocationViewModelFactory(myLocationRepository, mySettRepository)
       )
       viewModel.initialLoad()
       val sessionsList by viewModel.locList.collectAsState()
 
       LocationScreen(
         locList = sessionsList,
+        applicationContext = applicationContext,
         onLongClick = {
             uid -> viewModel.deleteLocationAndRefresh(uid)
             showInfoSnackbar(scaffoldState, scope, "Elemento eliminato correttamente")

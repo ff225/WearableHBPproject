@@ -19,6 +19,7 @@ import java.util.Date
 @Composable
 fun LocationScreen(
     locList: List<MyLocationEntity>,
+    applicationContext: android.content.Context,
     onLongClick: (Int) -> Unit = {},
     onConfirmFilters: (String) -> Unit = {},
 ){
@@ -30,6 +31,7 @@ fun LocationScreen(
         item(){
             DateTimeRangeDialogPicker(
                 dataInizio = Date(),
+                applicationContext = applicationContext,
                 onConfim = { dates ->
                     onConfirmFilters(dates)
                 }
