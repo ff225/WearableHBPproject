@@ -57,8 +57,6 @@ fun BloodPressureDetail(
       Text(stringResource(id = R.string.bp_diastolic) + ": " + bpDetail.diastolic.toString() + " mmHg")
       //Text(stringResource(id = R.string.bp_posizione_misurazione) + ": " + stringArrayResource(id=R.array.bp_posizioni_misurazione)[measurementLocation])
       //Text(stringResource(id = R.string.bp_posizione_corpo) + ": " + stringArrayResource(id=R.array.bp_posizioni_corpo)[bodyPosition])
-      Text(stringResource(id = R.string.bp_latitudine) + ": " + bpDetail.latitude)
-      Text(stringResource(id = R.string.bp_longitudine) + ": " + bpDetail.longitude)
     }
   }
 }

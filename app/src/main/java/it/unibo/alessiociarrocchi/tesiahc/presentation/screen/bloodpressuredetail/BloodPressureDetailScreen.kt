@@ -39,6 +39,7 @@ import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.updateBloodPressureDesc
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail
+import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail_GPS
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail_HeartRate
 import it.unibo.alessiociarrocchi.tesiahc.sendSingleHealthData
 import kotlinx.coroutines.CoroutineScope
@@ -89,13 +90,14 @@ fun BloodPressureDetailScreen(
       }
       Spacer(modifier = Modifier.height(8.dp))
 
-      // dati pressione
-      Text(
-        color = MaterialTheme.colors.primaryVariant,
-        text = stringResource(id = R.string.bp_detail_title),
-        style = MaterialTheme.typography.h5
-      )
-      if(myBP != null){
+
+      if(myBP != null) {
+        // dati pressione
+        Text(
+          color = MaterialTheme.colors.primaryVariant,
+          text = stringResource(id = R.string.bp_detail_title),
+          style = MaterialTheme.typography.h5
+        )
         BloodPressureDetail(
           myBP,
           onReloadPage,
@@ -103,23 +105,31 @@ fun BloodPressureDetailScreen(
           scaffoldState,
           scope
         )
-      }
 
-      // dati cuore
-      Text(
-        color = MaterialTheme.colors.primaryVariant,
-        text = stringResource(id = R.string.bp_detail_hr_title),
-        style = MaterialTheme.typography.h6
-      )
-      BloodPressureDetail_HeartRate(
-        hrAggregate
-      )
+        // dati localizzazione gps
+        Text(
+          color = MaterialTheme.colors.primaryVariant,
+          text = "Localizzazione GPS",
+          style = MaterialTheme.typography.h6
+        )
+        BloodPressureDetail_GPS(
+          myBP.latitude,
+          myBP.longitude
+        )
 
-      var textDesc by remember { mutableStateOf(myBP!!.description) }
-      val focusManager = LocalFocusManager.current
+        // dati cuore
+        Text(
+          color = MaterialTheme.colors.primaryVariant,
+          text = stringResource(id = R.string.bp_detail_hr_title),
+          style = MaterialTheme.typography.h6
+        )
+        BloodPressureDetail_HeartRate(
+          hrAggregate
+        )
 
-      // campo descrizione
-      if (myBP != null){
+        // campo descrizione
+        var textDesc by remember { mutableStateOf(myBP!!.description) }
+        val focusManager = LocalFocusManager.current
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
@@ -130,7 +140,7 @@ fun BloodPressureDetailScreen(
             textDesc = newText
           },
           label = { Text(text = "Descrizione misurazione") },
-          placeholder ={ Text(text = "Descrivi brevemente dove è stata svolta la misurazione e cosa si stava facendo poco prima") },
+          placeholder = { Text(text = "Descrivi brevemente dove è stata svolta la misurazione e cosa si stava facendo poco prima") },
           keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
           keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         )
@@ -139,17 +149,23 @@ fun BloodPressureDetailScreen(
           modifier = Modifier
             .fillMaxWidth(),
           horizontalArrangement = Arrangement.Center
-        ){
+        ) {
           Button(
             onClick = {
               runBlocking {
                 launch {
-                  updateBloodPressureDesc(myBP.id, textDesc, applicationContext, scaffoldState, scope)
+                  updateBloodPressureDesc(
+                    myBP.id,
+                    textDesc,
+                    applicationContext,
+                    scaffoldState,
+                    scope
+                  )
                 }
               }
 
-              runBlocking{
-                launch{
+              runBlocking {
+                launch {
                   sendSingleHealthData(myBP.id, applicationContext, scaffoldState, scope, false)
                 }
               }
@@ -160,7 +176,6 @@ fun BloodPressureDetailScreen(
           }
         }
       }
-
     }
   }
 }
