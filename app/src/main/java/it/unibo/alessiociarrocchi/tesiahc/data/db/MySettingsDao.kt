@@ -2,6 +2,7 @@ package it.unibo.alessiociarrocchi.tesiahc.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import java.util.Date
@@ -18,7 +19,7 @@ interface MySettingsDao {
     @Query("UPDATE my_settings_table SET valore=(:valore) WHERE chiave=(:chiave)")
     fun updateItem(chiave: String, valore: String)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     fun addItem(myItem: MySettingsEntity)
 
 }

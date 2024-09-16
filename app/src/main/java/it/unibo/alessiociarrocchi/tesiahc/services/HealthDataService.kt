@@ -4,7 +4,9 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.IBinder
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import it.unibo.alessiociarrocchi.tesiahc.R
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HealthDataReceiver
@@ -53,31 +55,33 @@ class HealthDataService: Service() {
     }
 
     private fun start(){
-        val notification = NotificationCompat.Builder(this, HealthDataReceiver.CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
-            .setShowWhen(true)
-            .setAutoCancel(true)
-            .setContentTitle("HEALTH CONNECT")
-            .setContentText("Sincronizzazione Health Connect in corso...")
+        if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+            val notification = NotificationCompat.Builder(this, HealthDataReceiver.CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setShowWhen(true)
+                .setAutoCancel(true)
+                .setContentTitle("HEALTH CONNECT")
+                .setContentText("Sincronizzazione Health Connect in corso...")
 
-        val notificationManager = getSystemService(
-            Context.NOTIFICATION_SERVICE
-        ) as NotificationManager
-        startForeground(HealthDataReceiver.NOTIFICATION_ID, notification.build())
+            val notificationManager = getSystemService(
+                Context.NOTIFICATION_SERVICE
+            ) as NotificationManager
+            startForeground(HealthDataReceiver.NOTIFICATION_ID, notification.build())
 
-        runBlocking {
-            launch {
-                syncHealthData(applicationContext)
+            runBlocking {
+                launch {
+                    syncHealthData(applicationContext)
+                }
             }
+
+            val updatedNotification = notification
+                .setContentText("Sincronizzazione Health Connect conclusa!")
+                .setWhen(System.currentTimeMillis())
+
+            notificationManager.notify(HealthDataReceiver.NOTIFICATION_ID, updatedNotification.build())
+            //notificationManager.cancel(HealthDataReceiver.NOTIFICATION_ID)
+            //notificationManager.cancelAll()
         }
-
-        val updatedNotification = notification
-            .setContentText("Sincronizzazione Health Connect conclusa!")
-            .setWhen(System.currentTimeMillis())
-
-        notificationManager.notify(HealthDataReceiver.NOTIFICATION_ID, updatedNotification.build())
-        //notificationManager.cancel(HealthDataReceiver.NOTIFICATION_ID)
-        notificationManager.cancelAll()
     }
 
 }

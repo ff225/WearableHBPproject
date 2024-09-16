@@ -1,5 +1,6 @@
 package it.unibo.alessiociarrocchi.tesiahc.data.db
 
+import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -9,8 +10,11 @@ import java.util.Date
     indices = [Index(value = ["coll_bp_id"], unique = true)]
 )
 data class MyHeartRateAggregateEntity (
+
+    @NonNull
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    @NonNull
     val coll_bp_id: Int,
     val hrStart: Date,
     val hrEnd: Date,

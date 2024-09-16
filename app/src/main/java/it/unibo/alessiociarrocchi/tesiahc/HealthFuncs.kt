@@ -35,7 +35,7 @@ fun startHealthDataSync(context: Context){
         val calendar: Calendar = Calendar.getInstance()
         val intent = Intent(context, HealthDataReceiver::class.java)
         val pendingIntent =
-            PendingIntent.getBroadcast(context, 2, intent, PendingIntent.FLAG_MUTABLE)
+            PendingIntent.getBroadcast(context, HealthDataReceiver.REQUESTCODE, intent, PendingIntent.FLAG_MUTABLE)
         val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
@@ -52,7 +52,7 @@ fun startHealthReminder(context: Context){
     if(MainActivity.SERVIZIO_HEALTHREM == 0){
         val calendar: Calendar = Calendar.getInstance()
         val intent = Intent(context, HourNotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_MUTABLE)
+        val pendingIntent = PendingIntent.getBroadcast(context, HourNotificationReceiver.REQUESTCODE, intent, PendingIntent.FLAG_MUTABLE)
         val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
@@ -101,8 +101,8 @@ fun syncHealthData(context: Context){
                         var myLatitude : Double = 0.0
                         var myLongitude : Double = 0.0
                         if (myLocation != null){
-                            var myLatitude =  myLocation!!.latitude
-                            var myLongitude = myLocation.longitude
+                            myLatitude =  myLocation!!.latitude
+                            myLongitude = myLocation.longitude
                         }
 
                         val myBP = MyBloodPressureEntity(
@@ -122,9 +122,17 @@ fun syncHealthData(context: Context){
                         bpRep.insertItem(myBP)
 
                         // dati HR
-                        val savedItem = bpRep.getItemByExternalId(myuid)
+                        var savedItem: MyBloodPressureEntity? = null
+                        runBlocking {
+                            launch {
+                                savedItem = bpRep.getItemByExternalId(myuid)
+                            }
+                        }
+
+                        var test = hraRep.getItems()
+
                         if (savedItem != null){
-                            if (savedItem.id > 0){
+                            if (savedItem!!.id > 0){
                                 val hrStart =item.time.minus(30, ChronoUnit.MINUTES)
                                 val hrEnd = item.time
                                 var hrAVG: Long = 0
@@ -142,7 +150,7 @@ fun syncHealthData(context: Context){
                                 }
 
                                 val myHRA = MyHeartRateAggregateEntity(
-                                    coll_bp_id = savedItem.id,
+                                    coll_bp_id = savedItem!!.id,
                                     hrStart = hrStart.toDate(),
                                     hrEnd = hrEnd.toDate(),
                                     timezone = myBP.timezone,
@@ -156,7 +164,6 @@ fun syncHealthData(context: Context){
 
                             }
                         }
-
                     }
                 }
             }

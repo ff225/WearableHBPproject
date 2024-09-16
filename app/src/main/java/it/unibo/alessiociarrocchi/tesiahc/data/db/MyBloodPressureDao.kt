@@ -24,7 +24,7 @@ interface MyBloodPressureDao {
     @Query("SELECT * from my_blood_pressure_table WHERE id = :id")
     fun getItem(id: Int): MyBloodPressureEntity
 
-    @Query("SELECT * from my_blood_pressure_table WHERE uid = :uid")
+    @Query("SELECT * from my_blood_pressure_table WHERE uid =:uid")
     fun getItemByExternalId(uid: String): MyBloodPressureEntity?
 
     /*

@@ -131,7 +131,12 @@ fun BloodPressureDetailScreen(
         var textDesc by remember { mutableStateOf(myBP!!.description) }
         val focusManager = LocalFocusManager.current
         Spacer(modifier = Modifier.height(24.dp))
-
+        Text(
+          color = MaterialTheme.colors.primaryVariant,
+          text = "Descrizione misurazione",
+          style = MaterialTheme.typography.h6
+        )
+        Spacer(modifier = Modifier.height(6.dp))
         OutlinedTextField(
           modifier = Modifier.fillMaxWidth(),
           maxLines = 5,
@@ -139,7 +144,6 @@ fun BloodPressureDetailScreen(
           onValueChange = { newText ->
             textDesc = newText
           },
-          label = { Text(text = "Descrizione misurazione") },
           placeholder = { Text(text = "Descrivi brevemente dove è stata svolta la misurazione e cosa si stava facendo poco prima") },
           keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
           keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
@@ -175,6 +179,7 @@ fun BloodPressureDetailScreen(
             Text(text = "Salva info")
           }
         }
+
       }
     }
   }

@@ -1,5 +1,6 @@
 package it.unibo.alessiociarrocchi.tesiahc.data.db
 
+import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -9,8 +10,11 @@ import java.util.Date
     indices = [Index(value = ["uid"], unique = true)]
 )
 data class MyBloodPressureEntity (
+
+    @NonNull
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    @NonNull
     val uid: String,    // id health connect
     val systolic: Double,
     val diastolic: Double,

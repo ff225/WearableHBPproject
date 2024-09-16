@@ -36,9 +36,9 @@ class MyBloodPressureRepository(
         return bpDao.getBPBUnsynced()
     }
 
-    /*
-    fun getAllItems(): List<MyBloodPressureEntity> = bpDao.getAllBP()
 
+    fun getAllItems(): List<MyBloodPressureEntity> = bpDao.getAllBP()
+    /*
     fun getAllItemsStream(): Flow<List<MyBloodPressureEntity>> = bpDao.getAllBP()
 
     fun getItemStream(id: Int): Flow<MyBloodPressureEntity?> = bpDao.getFlowBP(id)

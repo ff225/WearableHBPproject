@@ -5,7 +5,9 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.IBinder
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
 import it.unibo.alessiociarrocchi.tesiahc.R
@@ -58,53 +60,55 @@ class LocationService : Service() {
     }
 
     private fun start() {
-        MainActivity.SERVIZIO_GPS = 1
+        if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+            MainActivity.SERVIZIO_GPS = 1
 
-        notification = NotificationCompat.Builder(this, LocationReceiver.CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
-            .setShowWhen(true)
-            .setAutoCancel(true)
-            .setContentTitle("Tesi Android Health Connect")
-            .setContentText("Servizio localizzazione GPS avviato")
+            notification = NotificationCompat.Builder(this, LocationReceiver.CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setShowWhen(true)
+                .setAutoCancel(true)
+                .setContentTitle("Tesi Android Health Connect")
+                .setContentText("Servizio localizzazione GPS avviato")
 
-        notificationManager = getSystemService(
-            Context.NOTIFICATION_SERVICE
-        ) as NotificationManager
+            notificationManager = getSystemService(
+                Context.NOTIFICATION_SERVICE
+            ) as NotificationManager
 
-        locationClient.getLocationUpdates((15 * 60 * 1000)) //15 minuti
-            .catch { e -> e.printStackTrace() }
-            .onEach { location ->
-                //Log.d(TAG, location.latitude.toString() + " " + location.longitude.toString())
+            locationClient.getLocationUpdates((15 * 60 * 1000)) //15 minuti
+                .catch { e -> e.printStackTrace() }
+                .onEach { location ->
+                    //Log.d(TAG, location.latitude.toString() + " " + location.longitude.toString())
 
-                if(location != null){
-                    val loc_latitude = location.latitude
-                    val loc_longitude = location.longitude
-                    val loc_time = location.time;
+                    if(location != null){
+                        val loc_latitude = location.latitude
+                        val loc_longitude = location.longitude
+                        val loc_time = location.time;
 
-                    val lastLocation = MyLocationRepository.getInstance(applicationContext, Executors.newSingleThreadExecutor())
-                        .getLastLocation()
+                        val lastLocation = MyLocationRepository.getInstance(applicationContext, Executors.newSingleThreadExecutor())
+                            .getLastLocation()
 
-                    if (lastLocation == null){
-                        SaveLocation(loc_latitude, loc_longitude, loc_time)
-                    }
-                    else{
-                        if(lastLocation.mydate == null){
+                        if (lastLocation == null){
                             SaveLocation(loc_latitude, loc_longitude, loc_time)
                         }
                         else{
-                            val last_time = lastLocation.mydate.time
-                            val last_time_conf =last_time + (15 * 60 * 1000) // aggiungo 15 minuti
-                            if(last_time_conf < loc_time){
+                            if(lastLocation.mydate == null){
                                 SaveLocation(loc_latitude, loc_longitude, loc_time)
+                            }
+                            else{
+                                val last_time = lastLocation.mydate.time
+                                val last_time_conf =last_time + (15 * 60 * 1000) // aggiungo 15 minuti
+                                if(last_time_conf < loc_time){
+                                    SaveLocation(loc_latitude, loc_longitude, loc_time)
+                                }
                             }
                         }
                     }
+
                 }
+                .launchIn(serviceScope)
 
-            }
-            .launchIn(serviceScope)
-
-        startForeground(LocationReceiver.NOTIFICATION_ID, notification.build())
+            startForeground(LocationReceiver.NOTIFICATION_ID, notification.build())
+        }
     }
 
     private fun SaveLocation(loc_latitude: Double, loc_longitude: Double, loc_time: Long){
@@ -123,7 +127,7 @@ class LocationService : Service() {
 
         notificationManager.notify(LocationReceiver.NOTIFICATION_ID, updatedNotification.build())
         //notificationManager.cancel(LocationReceiver.NOTIFICATION_ID)
-        notificationManager.cancelAll()
+        //notificationManager.cancelAll()
     }
 
     private fun stop() {

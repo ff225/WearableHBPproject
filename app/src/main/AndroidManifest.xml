@@ -20,6 +20,7 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
   <application
       android:enableOnBackInvokedCallback="true"
@@ -62,7 +63,11 @@
         android:foregroundServiceType="health"
         android:permission="android.permission.FOREGROUND_SERVICE_HEALTH"
         />
-
+    <service
+        android:name=".services.HourNotificationService"
+        android:exported="false"
+        android:foregroundServiceType="mediaPlayback"
+        />
 
     <receiver android:name=".receivers.LocationReceiver" android:enabled="true" android:exported="false">
       <intent-filter>
@@ -70,7 +75,11 @@
       </intent-filter>
     </receiver>
     <receiver android:name=".receivers.HealthDataReceiver" android:enabled="true" android:exported="false" />
-    <receiver android:name=".receivers.HourNotificationReceiver" android:enabled="true" android:exported="false" />
+    <receiver android:name=".receivers.HourNotificationReceiver" android:enabled="true" android:exported="false">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
+      </intent-filter>
+    </receiver>
 
   </application>
 

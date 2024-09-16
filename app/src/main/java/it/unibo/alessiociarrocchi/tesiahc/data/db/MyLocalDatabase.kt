@@ -17,7 +17,7 @@ private const val DATABASE_NAME = "tesiahc_database"
         /*MySleepSegmentEventEntity::class,
         MySleepClassifyEventEntity::class*/
     ],
-    version = 10,
+    version = 12,
     exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class MyLocalDatabase : RoomDatabase() {
