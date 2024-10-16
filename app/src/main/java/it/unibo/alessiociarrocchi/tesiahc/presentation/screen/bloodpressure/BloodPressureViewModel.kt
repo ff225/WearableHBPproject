@@ -37,7 +37,6 @@ class BloodPressureViewModel(
             val dataFine = _currDateFilters.substringAfter('|').trim()
             if(dataFine.isNotEmpty()){
                 viewModelScope.launch {
-                    //_bpList.value = myBPRepository.getItemsByDates(dataInizio, dataFine)
                     _bpList.value = myBPRepository.getItemsByDates(dataInizio, dataFine)
                 }
             }

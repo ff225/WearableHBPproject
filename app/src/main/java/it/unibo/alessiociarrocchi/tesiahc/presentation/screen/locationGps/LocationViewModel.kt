@@ -20,9 +20,6 @@ class LocationViewModel(
     private val mySettRepository: MySettingsRepository
 ) : ViewModel() {
 
-    //val periodStart = Instant.now().minus(30, ChronoUnit.DAYS)
-    //val periodEnd = Instant.now()
-    //val locList = locationRepository.getLocations()
     private val _locList = MutableStateFlow(emptyList<MyLocationEntity>())
     val locList = _locList.asStateFlow()
     private var _currDate = ""

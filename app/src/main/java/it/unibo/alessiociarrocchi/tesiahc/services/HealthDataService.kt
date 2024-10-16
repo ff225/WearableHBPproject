@@ -79,8 +79,6 @@ class HealthDataService: Service() {
                 .setWhen(System.currentTimeMillis())
 
             notificationManager.notify(HealthDataReceiver.NOTIFICATION_ID, updatedNotification.build())
-            //notificationManager.cancel(HealthDataReceiver.NOTIFICATION_ID)
-            //notificationManager.cancelAll()
         }
     }
 

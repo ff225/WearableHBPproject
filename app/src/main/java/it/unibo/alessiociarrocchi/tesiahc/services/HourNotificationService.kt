@@ -23,8 +23,6 @@ import kotlinx.coroutines.runBlocking
 class HourNotificationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private lateinit var notification : NotificationCompat.Builder
-    private lateinit var notificationManager : NotificationManager
 
     override fun onBind(intent: Intent?): IBinder? = null
 

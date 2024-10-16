@@ -27,14 +27,6 @@ interface MyBloodPressureDao {
     @Query("SELECT * from my_blood_pressure_table WHERE uid =:uid")
     fun getItemByExternalId(uid: String): MyBloodPressureEntity?
 
-    /*
-    @Query("SELECT * from my_blood_pressure_table WHERE id = :id")
-    fun getFlowBP(id: Int): Flow<MyBloodPressureEntity>
-
-    @Query("SELECT * from my_blood_pressure_table ORDER BY time DESC")
-    fun getAllBP(): Flow<List<MyBloodPressureEntity>>
-    */
-
     @Query("SELECT * from my_blood_pressure_table ORDER BY time DESC")
     fun getAllBP(): List<MyBloodPressureEntity>
 

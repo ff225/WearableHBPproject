@@ -23,8 +23,6 @@ class BloodPressureDetailViewModel(
   var hrAggregate: MutableState<MyHeartRateAggregateEntity?> = mutableStateOf(null)
     private set
 
-  //private val app = MutableStateFlow(emptyList<MyHeartRateAggregateEntity>())
-
   fun initialLoad() {
     readDetailsData()
   }

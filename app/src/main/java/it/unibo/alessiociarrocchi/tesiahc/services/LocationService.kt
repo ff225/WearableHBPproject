@@ -126,8 +126,6 @@ class LocationService : Service() {
             .setWhen(System.currentTimeMillis())
 
         notificationManager.notify(LocationReceiver.NOTIFICATION_ID, updatedNotification.build())
-        //notificationManager.cancel(LocationReceiver.NOTIFICATION_ID)
-        //notificationManager.cancelAll()
     }
 
     private fun stop() {

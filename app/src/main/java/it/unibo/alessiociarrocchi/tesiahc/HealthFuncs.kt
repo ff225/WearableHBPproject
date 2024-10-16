@@ -13,11 +13,8 @@ import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager
 import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
-//import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationTracker
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
-//import it.unibo.alessiociarrocchi.tesiahc.funcs.OnLocationChangeListener
-//import it.unibo.alessiociarrocchi.tesiahc.funcs.getCurrentLocation
 import it.unibo.alessiociarrocchi.tesiahc.presentation.MainActivity
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HealthDataReceiver
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HourNotificationReceiver
@@ -57,7 +54,7 @@ fun startHealthReminder(context: Context){
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.getTimeInMillis(),
-            (1000 * 60 * 60 * 2).toLong(), //2H
+            (1000 * 60 * 60 * 1).toLong(), //1H
             pendingIntent
         )
     }
@@ -173,7 +170,6 @@ fun syncHealthData(context: Context){
         }
     }
 
-    //TODO salvare dati sonno
 }
 
 

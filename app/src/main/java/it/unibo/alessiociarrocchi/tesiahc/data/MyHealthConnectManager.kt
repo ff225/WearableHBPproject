@@ -46,11 +46,8 @@ class MyHealthConnectManager(private val context: Context) {
     }
   }
 
-  fun Is_HC_Installed() : Boolean {
-    if ( HealthConnectClient.getSdkStatus(context) == SDK_AVAILABLE){
-      return true;
-    }
-    return false;
+  fun isInstalled() : Boolean {
+    return HealthConnectClient.getSdkStatus(context) == SDK_AVAILABLE;
   }
 
   /**

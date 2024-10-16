@@ -9,9 +9,6 @@ import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.MySettingsRepository
 import it.unibo.alessiociarrocchi.tesiahc.funcs.hasLocationPermission
 import it.unibo.alessiociarrocchi.tesiahc.funcs.startLocationBackgroungService
-import it.unibo.alessiociarrocchi.tesiahc.presentation.component.InstalledMessage
-import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotInstalledMessage
-import it.unibo.alessiociarrocchi.tesiahc.presentation.component.NotSupportedMessage
 //import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.startHealthDataSync
 import it.unibo.alessiociarrocchi.tesiahc.startHealthReminder
@@ -51,7 +48,7 @@ class MainActivity : ComponentActivity()  {
     // avvio notifiche reminder per effettuare le misurazioni
     runBlocking {
       launch {
-        if(healthConnectManager.Is_HC_Installed()){
+        if(healthConnectManager.isInstalled()){
           startHealthReminder(mycontext)
         }
       }

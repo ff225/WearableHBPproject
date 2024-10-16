@@ -14,8 +14,6 @@ private const val DATABASE_NAME = "tesiahc_database"
         MyHeartRateAggregateEntity::class,
         MyLocationEntity::class,
         MySettingsEntity::class,
-        /*MySleepSegmentEventEntity::class,
-        MySleepClassifyEventEntity::class*/
     ],
     version = 12,
     exportSchema = false)
@@ -26,8 +24,6 @@ abstract class MyLocalDatabase : RoomDatabase() {
     abstract fun bpHRDao(): MyHeartRateAggregateDao
     abstract fun locationDao(): MyLocationDao
     abstract fun settingsDao(): MySettingsDao
-    /*abstract fun sleepSegmentEventDao(): MySleepSegmentEventDao
-    abstract fun sleepClassifyEventDao(): MySleepClassifyEventDao*/
 
     companion object {
         @Volatile

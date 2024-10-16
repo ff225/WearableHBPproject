@@ -21,8 +21,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
-//import it.unibo.alessiociarrocchi.tesiahc.data.MyLocationTracker
-
 
 fun Context.hasLocationPermission(): Boolean {
     return ContextCompat.checkSelfPermission(
@@ -35,11 +33,6 @@ fun Context.hasLocationPermission(): Boolean {
 
 fun startLocationBackgroungService(context: Context){
     if (MainActivity.SERVIZIO_GPS == 0){
-        /*
-        val myIntent = Intent(context, LocationService::class.java)
-        context.startForegroundService(myIntent)
-        */
-
         val myIntent = Intent(context, LocationService::class.java).apply {
             action = LocationService.ACTION_START
         }

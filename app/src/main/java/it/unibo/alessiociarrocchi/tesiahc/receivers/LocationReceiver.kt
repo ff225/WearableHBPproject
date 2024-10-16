@@ -22,12 +22,5 @@ class LocationReceiver: BroadcastReceiver() {
     @Override
     override fun onReceive(context: Context, intent: Intent) {
         startLocationBackgroungService(context)
-
-        /*
-        val myIntent = Intent(context, LocationService::class.java).apply {
-            action = LocationService.ACTION_START
-        }
-        context.startForegroundService(myIntent)
-        */
     }
 }

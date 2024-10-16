@@ -15,8 +15,6 @@ class BaseApplication : Application() {
       it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager(this)
     }
 
-    //lateinit var container: AppContainer
-
     override fun onCreate() {
         super.onCreate()
 
@@ -54,6 +52,5 @@ class BaseApplication : Application() {
         notificationManager2.createNotificationChannel(channel2)
 
 
-        //container = AppDataContainer(/*this*/)
     }
 }
