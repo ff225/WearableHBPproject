@@ -1,25 +1,24 @@
-package it.unibo.alessiociarrocchi.tesiahc.data.db
+package it.unibo.alessiociarrocchi.tesiahc.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
-import java.util.Date
+import it.unibo.alessiociarrocchi.tesiahc.data.model.MySettingsEntity
 
 @Dao
-interface MySettingsDao {
+interface SettingsDao {
 
     @Query("SELECT * FROM my_settings_table WHERE id=(:id)")
-    fun getItem(id: Int): MySettingsEntity
+    suspend fun getItem(id: Int): MySettingsEntity
 
     @Query("SELECT * FROM my_settings_table WHERE chiave=(:chiave)")
-    fun getItem(chiave: String): MySettingsEntity
+    suspend fun getItem(chiave: String): MySettingsEntity
 
     @Query("UPDATE my_settings_table SET valore=(:valore) WHERE chiave=(:chiave)")
-    fun updateItem(chiave: String, valore: String)
+    suspend fun updateItem(chiave: String, valore: String)
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    fun addItem(myItem: MySettingsEntity)
+    suspend fun addItem(myItem: MySettingsEntity)
 
 }
