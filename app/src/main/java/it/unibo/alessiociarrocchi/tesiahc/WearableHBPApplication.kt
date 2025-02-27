@@ -1,24 +1,26 @@
-package it.unibo.alessiociarrocchi.tesiahc.presentation
+package it.unibo.alessiociarrocchi.tesiahc
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-//import it.unibo.alessiociarrocchi.tesiahc.data.AppContainer
-//import it.unibo.alessiociarrocchi.tesiahc.data.AppDataContainer
+import it.unibo.alessiociarrocchi.tesiahc.data.AppContainerImpl
+import it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HealthDataReceiver
 import it.unibo.alessiociarrocchi.tesiahc.receivers.HourNotificationReceiver
 import it.unibo.alessiociarrocchi.tesiahc.receivers.LocationReceiver
 
-class BaseApplication : Application() {
+class WearableHBPApplication : Application() {
+
+    lateinit var appContainer: AppContainerImpl
     val healthConnectManager by lazy {
-      it.unibo.alessiociarrocchi.tesiahc.data.MyHealthConnectManager(this)
+        MyHealthConnectManager(this)
     }
 
     override fun onCreate() {
         super.onCreate()
 
-        // sincronizzazione dati health
+        // TODO move all notification here.
         val channel = NotificationChannel(
             HealthDataReceiver.CHANNEL_ID,
             HealthDataReceiver.CHANNEL_NAME,
@@ -50,7 +52,6 @@ class BaseApplication : Application() {
             Context.NOTIFICATION_SERVICE
         ) as NotificationManager
         notificationManager2.createNotificationChannel(channel2)
-
-
+        appContainer = AppContainerImpl(this)
     }
 }
