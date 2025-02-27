@@ -1,4 +1,4 @@
-package it.unibo.alessiociarrocchi.tesiahc.data.db
+package it.unibo.alessiociarrocchi.tesiahc.data.model
 
 import androidx.annotation.NonNull
 import androidx.room.Entity
@@ -6,12 +6,12 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity(tableName = "my_blood_pressure_table",
+@Entity(
+    tableName = "my_blood_pressure_table",
     indices = [Index(value = ["uid"], unique = true)]
 )
-data class MyBloodPressureEntity (
+data class BloodPressureEntity(
 
-    @NonNull
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     @NonNull
@@ -23,7 +23,7 @@ data class MyBloodPressureEntity (
     val bodyPosition: Int,
     val measurementLocation: Int,
     var description: String,
-    val latitude: Double= 0.0,
-    val longitude: Double= 0.0,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     var synced: Int = 0
 )
