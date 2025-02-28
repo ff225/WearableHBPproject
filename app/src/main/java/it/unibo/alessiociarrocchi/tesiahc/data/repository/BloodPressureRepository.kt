@@ -4,7 +4,7 @@ import it.unibo.alessiociarrocchi.tesiahc.data.dao.BloodPressureDao
 import it.unibo.alessiociarrocchi.tesiahc.data.model.BloodPressureEntity
 import it.unibo.alessiociarrocchi.tesiahc.toDate
 
-class MyBloodPressureRepository(
+class BloodPressureRepository(
     private val bloodPressureDao: BloodPressureDao
 ) {
 

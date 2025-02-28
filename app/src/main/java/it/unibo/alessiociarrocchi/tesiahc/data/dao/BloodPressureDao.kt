@@ -21,24 +21,24 @@ interface BloodPressureDao {
     suspend fun delete(item: BloodPressureEntity)
 
 
-    @Query("SELECT * from my_blood_pressure_table WHERE id = :id")
+    @Query("SELECT * from blood_pressure_table WHERE id = :id")
     suspend fun getItem(id: Int): BloodPressureEntity
 
-    @Query("SELECT * from my_blood_pressure_table WHERE uid =:uid")
+    @Query("SELECT * from blood_pressure_table WHERE uid =:uid")
     suspend fun getItemByExternalId(uid: String): BloodPressureEntity?
 
-    @Query("SELECT * from my_blood_pressure_table ORDER BY time DESC")
+    @Query("SELECT * from blood_pressure_table ORDER BY time DESC")
     suspend fun getAllBP(): List<BloodPressureEntity>
 
     @Query(
-        "SELECT * FROM my_blood_pressure_table" +
+        "SELECT * FROM blood_pressure_table" +
                 " WHERE date(time / 1000,'unixepoch')>=date(:dataInizio / 1000,'unixepoch') AND date(time / 1000,'unixepoch')<=date(:dataFine/ 1000,'unixepoch') ORDER BY time DESC"
     )
     suspend fun getBPByDates(dataInizio: Date, dataFine: Date): List<BloodPressureEntity>
 
-    @Query("SELECT * FROM my_blood_pressure_table WHERE date(time / 1000,'unixepoch') = date(:today / 1000,'unixepoch') ORDER BY time DESC")
+    @Query("SELECT * FROM blood_pressure_table WHERE date(time / 1000,'unixepoch') = date(:today / 1000,'unixepoch') ORDER BY time DESC")
     suspend fun getItemsToday(today: Date): List<BloodPressureEntity>
 
-    @Query("SELECT * from my_blood_pressure_table WHERE synced=0 ORDER BY time ASC")
+    @Query("SELECT * from blood_pressure_table WHERE synced=0 ORDER BY time ASC")
     suspend fun getBPBUnsynced(): List<BloodPressureEntity>
 }
