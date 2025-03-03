@@ -33,6 +33,9 @@ import androidx.navigation.compose.rememberNavController
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.HomeScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.MyScaffold
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.PermissionScreen
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure.BloodPressureScreen
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail.BloodPressureDetailScreen
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.locationGps.LocationScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.theme.HealthConnectTheme
 
 
@@ -98,91 +101,20 @@ class MainActivity : ComponentActivity() {
                     composable(PermissionScreen.route) {
                         PermissionScreen(navController)
                     }
+
+                    composable(BloodPressureScreen.route) {
+                        BloodPressureScreen(navController)
+                    }
+                    composable(BloodPressureDetailScreen.route) {
+                        BloodPressureDetailScreen(navController)
+                    }
+                    composable(LocationScreen.route) {
+                        LocationScreen(navController)
+                    }
                 }
             }
         }
     }
-    /*
-        companion object {
-            var SERVIZIO_HEALTHDATA: Int = 0
-            var SERVIZIO_HEALTHREM: Int = 0
-            var SERVIZIO_GPS: Int = 0
-        }
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            initMyApp()
-        }
-
-        override fun onResume() {
-            super.onResume()
-            initMyApp()
-        }
-
-        fun initMyApp() {
-            val mycontext = this
-
-            // avvio serivzio geolocalizzazione
-            if (this.hasLocationPermission()) {
-                startLocationBackgroungService(this)
-            }
-
-            val healthConnectManager = (application as WearableHBPApplication).healthConnectManager
-
-            // avvio notifiche reminder per effettuare le misurazioni
-            runBlocking {
-                launch {
-                    if (healthConnectManager.isInstalled()) {
-                        startHealthReminder(mycontext)
-                    }
-                }
-            }
-
-            // controllo se i permessi (di lettura) dei dati health sono stati concessi
-            var hoPermsHealth: Boolean = false
-            runBlocking {
-                launch {
-                    hoPermsHealth =
-                        healthConnectManager.hasAllPermissions(healthConnectManager.permissions)
-                }
-            }
-            // avvio del servizio di sincronizzazione
-            if (hoPermsHealth) {
-                startHealthDataSync(mycontext)
-            }
-
-            /*
-            val settRepository = SettingsRepository.getInstance(
-              applicationContext, Executors.newSingleThreadExecutor()
-            )
-
-            val locationRepository = LocationRepository.getInstance(
-              applicationContext, Executors.newSingleThreadExecutor()
-            )
-
-            val bpRepository = MyBloodPressureRepository.getInstance(
-              applicationContext, Executors.newSingleThreadExecutor()
-            )
-
-            val hrRepository = HeartRateRepository.getInstance(
-              applicationContext, Executors.newSingleThreadExecutor()
-            )
-
-            setContent {
-                HealthConnectApp(
-                    healthConnectManager = healthConnectManager,
-                    myLocationRepository = locationRepository,
-                    myBPRepository = bpRepository,
-                    myHRRepository = hrRepository,
-                    mySettRepository = settRepository,
-                    applicationContext = mycontext
-                )
-            }
-
-             */
-        }
-
-    */
 }
 
 @SuppressLint("RestrictedApi")
