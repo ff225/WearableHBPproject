@@ -15,6 +15,7 @@ import it.unibo.alessiociarrocchi.tesiahc.data.model.BloodPressureEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.model.HeartRateAggregateEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.repository.BloodPressureRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.repository.HeartRateRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.repository.LocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.toDate
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -28,6 +29,8 @@ class GetDataFromHC(ctx: Context, params: WorkerParameters) :
     private val heartRateRepository =
         (ctx as WearableHBPApplication).appContainer.heartRateRepository
 
+    private val locationRepository = (ctx as WearableHBPApplication).appContainer.locationRepository
+
     override suspend fun doWork(): Result {
 
         val startTime = Instant.now().minus(30, ChronoUnit.MINUTES)
@@ -37,7 +40,8 @@ class GetDataFromHC(ctx: Context, params: WorkerParameters) :
             healthConnectManager,
             startTime,
             endTime,
-            bloodPressureRepo
+            bloodPressureRepo,
+            locationRepository
         )
 
         readAggregateHeartRate(
@@ -59,6 +63,7 @@ suspend fun readAggregateHeartRate(
     heartRateRepository: HeartRateRepository,
     bloodsRecord: List<BloodPressureRecord>
 ) {
+
     bloodsRecord.forEach { bloodRecord ->
         try {
             val response =
@@ -106,7 +111,8 @@ suspend fun readBloodPressure(
     healthConnectClient: HealthConnectClient,
     startTime: Instant,
     endTime: Instant,
-    bloodPressureRepo: BloodPressureRepository
+    bloodPressureRepo: BloodPressureRepository,
+    locationRepository: LocationRepository
 ): List<BloodPressureRecord> {
     try {
         val response = healthConnectClient.readRecords(
@@ -117,7 +123,9 @@ suspend fun readBloodPressure(
         )
 
         response.records.forEach {
-            // TODO add lat and long
+
+            val locationEntity = locationRepository.getLocationForMeasurement(it.time.toDate())
+
             // get from repository using getLocationForMeasurement
             Log.d("GetDataFromHC", "Reading blood pressure record: $it")
             bloodPressureRepo.insertItem(
@@ -130,8 +138,8 @@ suspend fun readBloodPressure(
                     bodyPosition = it.bodyPosition,
                     measurementLocation = it.measurementLocation,
                     description = "NA",
-                    latitude = -1.0,
-                    longitude = -1.0,
+                    latitude = locationEntity?.latitude ?: -1.0,
+                    longitude = locationEntity?.longitude ?: -1.0,
                     synced = false
 
 
