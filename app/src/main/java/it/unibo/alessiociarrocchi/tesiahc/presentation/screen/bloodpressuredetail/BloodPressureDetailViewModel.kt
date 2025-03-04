@@ -1,63 +1,48 @@
 package it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
-import it.unibo.alessiociarrocchi.tesiahc.data.MyHeartRateRepository
-import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
-import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
+import it.unibo.alessiociarrocchi.tesiahc.data.model.BloodPressureEntity
+import it.unibo.alessiociarrocchi.tesiahc.data.model.HeartRateAggregateEntity
+import it.unibo.alessiociarrocchi.tesiahc.data.repository.BloodPressureRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.repository.HeartRateRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class BloodPressureDetailViewModel(
-  private val uid: String,
-  private val myBPRepository: MyBloodPressureRepository,
-  private val myHRRepository: MyHeartRateRepository
+    savedStateHandle: SavedStateHandle,
+    private val bloodPressureRepository: BloodPressureRepository,
+    private val heartRateRepository: HeartRateRepository
 ) : ViewModel() {
 
-  var bpDetail: MutableState<MyBloodPressureEntity?> = mutableStateOf(null)
-    private set
+    private val itemId: Int = checkNotNull(savedStateHandle[BloodPressureDetailScreen.itemIdArg])
 
-  var hrAggregate: MutableState<MyHeartRateAggregateEntity?> = mutableStateOf(null)
-    private set
 
-  fun initialLoad() {
-    readDetailsData()
-  }
+    var bpDetail: MutableStateFlow<BloodPressureEntity?> = MutableStateFlow(null)
+        private set
 
-  private fun readDetailsData() {
-    viewModelScope.launch {
+    var hrAggregate: MutableStateFlow<HeartRateAggregateEntity?> = MutableStateFlow(null)
+        private set
 
-      bpDetail.value = myBPRepository.getItem(uid.toInt())
-      if (bpDetail != null){
-        if(bpDetail.value != null){
-          hrAggregate.value = myHRRepository.getItemByExternalId(bpDetail.value!!.id)
-          //app.value = myHRRepository.getItems()
+    init {
+        Log.d("BloodPressureDetailViewModel", "itemId: $itemId")
+
+        viewModelScope.launch {
+            bpDetail.value = bloodPressureRepository.getItem(itemId)
+            hrAggregate.value = heartRateRepository.getItemByExternalId(bpDetail.value!!.uid)
+            Log.d("BloodPressureDetailViewModel", "bpDetail.value: ${bpDetail.value}")
+            Log.d("BloodPressureDetailViewModel", "hrAggregate.value: ${hrAggregate.value}")
         }
-      }
-
-
     }
-  }
 
-}
-
-class BloodPressureDetailViewModelFactory(
-  private val uid: String,
-  private val myBPRepository: MyBloodPressureRepository,
-  private val myHRRepository: MyHeartRateRepository
-) : ViewModelProvider.Factory {
-  override fun <T : ViewModel> create(modelClass: Class<T>): T {
-    if (modelClass.isAssignableFrom(BloodPressureDetailViewModel::class.java)) {
-      @Suppress("UNCHECKED_CAST")
-      return BloodPressureDetailViewModel(
-        uid = uid,
-        myBPRepository = myBPRepository,
-        myHRRepository = myHRRepository
-      ) as T
+    fun updateDescription(textDesc: String) {
+        viewModelScope.launch {
+            bpDetail.value?.let {
+                val updated = it.copy(description = textDesc)
+                bloodPressureRepository.updateItem(updated)
+            }
+        }
     }
-    throw IllegalArgumentException("Unknown ViewModel class")
-  }
 }

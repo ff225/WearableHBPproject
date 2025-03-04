@@ -1,9 +1,5 @@
-
 package it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressuredetail
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,171 +12,134 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import it.unibo.alessiociarrocchi.tesiahc.R
-import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
-import it.unibo.alessiociarrocchi.tesiahc.data.db.MyHeartRateAggregateEntity
-import it.unibo.alessiociarrocchi.tesiahc.data.updateBloodPressureDesc
+import it.unibo.alessiociarrocchi.tesiahc.presentation.AppViewModelProvider
+import it.unibo.alessiociarrocchi.tesiahc.presentation.RouteDestination
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail_GPS
 import it.unibo.alessiociarrocchi.tesiahc.presentation.component.BloodPressureDetail_HeartRate
-import it.unibo.alessiociarrocchi.tesiahc.sendSingleHealthData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.MyScaffold
 
 
-@OptIn(ExperimentalFoundationApi::class)
+object BloodPressureDetailScreen : RouteDestination {
+    override val route: String
+        get() = "blood_pressure_detail_screen"
+    override val title: String
+        get() = "Blood Pressure Detail"
+
+    const val itemIdArg = "itemId"
+    val routeWithArgs = "$route/{$itemIdArg}"
+}
+
 @Composable
 fun BloodPressureDetailScreen(
-  myBP: MyBloodPressureEntity?,
-  hrAggregate: MyHeartRateAggregateEntity?,
-  onGoBack: () -> Unit = {},
-  onReloadPage: () -> Unit = {},
-  applicationContext: android.content.Context,
-  scaffoldState : ScaffoldState,
-  scope: CoroutineScope
+    navController: NavController? = null,
 ) {
-  Column(
-    modifier = Modifier
-      .fillMaxWidth()
-      .fillMaxHeight()
-      .padding(horizontal = 10.dp, vertical = 16.dp)
-      .verticalScroll(rememberScrollState())
-  ){
-    Column(){
 
-      // bottone indietro
-      Row(
-        modifier = Modifier
-          .combinedClickable(
-            onClick = {
-              onGoBack()
-            }
-          ),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-      ){
-        Image(
-          painter = painterResource(id = R.drawable.arrow_back),
-          contentDescription = "Indietro",
-          contentScale = ContentScale.Fit,
-        )
-        Spacer(modifier = Modifier.height(5.dp))
-        Text(
-          text = "Torna indietro",
-        )
-      }
-      Spacer(modifier = Modifier.height(8.dp))
+    val viewModel: BloodPressureDetailViewModel = viewModel(
+        factory =
+        AppViewModelProvider.provideViewModel(LocalContext.current)
+    )
 
-
-      if(myBP != null) {
-        // dati pressione
-        Text(
-          color = MaterialTheme.colors.primaryVariant,
-          text = stringResource(id = R.string.bp_detail_title),
-          style = MaterialTheme.typography.h5
-        )
-        BloodPressureDetail(
-          myBP,
-          onReloadPage,
-          applicationContext,
-          scaffoldState,
-          scope
-        )
-
-        // dati localizzazione gps
-        Text(
-          color = MaterialTheme.colors.primaryVariant,
-          text = "Localizzazione GPS",
-          style = MaterialTheme.typography.h6
-        )
-        BloodPressureDetail_GPS(
-          myBP.latitude,
-          myBP.longitude
-        )
-
-        // dati cuore
-        Text(
-          color = MaterialTheme.colors.primaryVariant,
-          text = stringResource(id = R.string.bp_detail_hr_title),
-          style = MaterialTheme.typography.h6
-        )
-        BloodPressureDetail_HeartRate(
-          hrAggregate
-        )
-
-        // campo descrizione
-        var textDesc by remember { mutableStateOf(myBP!!.description) }
-        val focusManager = LocalFocusManager.current
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-          color = MaterialTheme.colors.primaryVariant,
-          text = "Descrizione misurazione",
-          style = MaterialTheme.typography.h6
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        OutlinedTextField(
-          modifier = Modifier.fillMaxWidth(),
-          maxLines = 5,
-          value = textDesc,
-          onValueChange = { newText ->
-            textDesc = newText
-          },
-          placeholder = { Text(text = "Descrivi brevemente dove è stata svolta la misurazione e cosa si stava facendo poco prima") },
-          keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-          keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-          modifier = Modifier
-            .fillMaxWidth(),
-          horizontalArrangement = Arrangement.Center
-        ) {
-          Button(
-            onClick = {
-              runBlocking {
-                launch {
-                  updateBloodPressureDesc(
-                    myBP.id,
-                    textDesc,
-                    applicationContext,
-                    scaffoldState,
-                    scope
-                  )
-                }
-              }
-
-              runBlocking {
-                launch {
-                  sendSingleHealthData(myBP.id, applicationContext, scaffoldState, scope, false)
-                }
-              }
-
-              onReloadPage()
-            }) {
-            Text(text = "Salva info")
-          }
+    val bloodDetail = viewModel.bpDetail.collectAsState()
+    val heardDetail = viewModel.hrAggregate.collectAsState()
+    MyScaffold(
+        navController = navController,
+        title = BloodPressureDetailScreen.title,
+        showBackButton = true,
+        navigateTo = {
+            navController?.navigateUp()
         }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Column {
+                bloodDetail.value.let { bloodDetail ->
+                    bloodDetail?.let {
+                        BloodPressureDetail(
+                            bloodDetail,
+                        )
 
-      }
+                        heardDetail.value.let { heartDetail ->
+                            heartDetail?.let {
+                                Text(
+                                    text = stringResource(id = R.string.bp_detail_title),
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.bp_detail_hr_title),
+                                )
+                                BloodPressureDetail_HeartRate(
+                                    heartDetail
+                                )
+                            }
+                        }
+
+                        Text(
+                            text = "Localizzazione GPS",
+                        )
+                        BloodPressureDetail_GPS(
+                            bloodDetail.latitude,
+                            bloodDetail.longitude
+                        )
+
+                        var textDesc by remember { mutableStateOf(bloodDetail.description) }
+                        val focusManager = LocalFocusManager.current
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text(
+                            text = "Descrizione misurazione",
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            maxLines = 5,
+                            value = textDesc ?: "",
+                            onValueChange = { newText ->
+                                textDesc = newText
+                            },
+                            placeholder = { Text(text = "Descrivi brevemente dove è stata svolta la misurazione e cosa si stava facendo poco prima") },
+                            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(padding),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Button(
+                                onClick = {
+                                    viewModel.updateDescription(textDesc!!)
+                                }
+                            ) {
+                                Text(text = "Salva info")
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
-  }
 }
