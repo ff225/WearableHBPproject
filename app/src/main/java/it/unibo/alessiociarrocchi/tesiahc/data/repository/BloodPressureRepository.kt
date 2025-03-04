@@ -1,8 +1,10 @@
 package it.unibo.alessiociarrocchi.tesiahc.data.repository
 
+import android.util.Log
 import it.unibo.alessiociarrocchi.tesiahc.data.dao.BloodPressureDao
 import it.unibo.alessiociarrocchi.tesiahc.data.model.BloodPressureEntity
 import it.unibo.alessiociarrocchi.tesiahc.toDate
+import kotlinx.coroutines.flow.Flow
 
 class BloodPressureRepository(
     private val bloodPressureDao: BloodPressureDao
@@ -14,11 +16,15 @@ class BloodPressureRepository(
     suspend fun getItemByExternalId(uid: String): BloodPressureEntity? =
         bloodPressureDao.getItemByExternalId(uid)
 
-    suspend fun getItemsToday(today: String): List<BloodPressureEntity> {
-        return bloodPressureDao.getItemsToday(today.toDate())
+    suspend fun getItemsToday(today: Long): List<BloodPressureEntity> {
+        Log.d("BloodPressureRepository", "getItemsToday: ${today}")
+        return bloodPressureDao.getItemsToday(today)
     }
 
-    suspend fun getItemsByDates(dataInizio: String, dataFine: String): List<BloodPressureEntity> {
+    fun getItemsByDates(
+        dataInizio: String,
+        dataFine: String
+    ): Flow<List<BloodPressureEntity>> {
         return bloodPressureDao.getBPByDates(dataInizio.toDate(), dataFine.toDate())
     }
 
