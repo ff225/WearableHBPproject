@@ -7,18 +7,19 @@ import java.util.Date
 
 @Entity(
     tableName = "my_heartrate_aggregate",
-    indices = [Index(value = ["coll_bp_id"], unique = true)]
+    indices = [Index(value = ["uidBloodPressureFK"], unique = true)]
 )
 data class HeartRateAggregateEntity(
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val coll_bp_id: Int,
+    val uidBloodPressureFK: String,
     val hrStart: Date,
     val hrEnd: Date,
     val timezone: Int,
     val hrAVG: Long,
     val hrMIN: Long,
     val hrMAX: Long,
-    val hrMC: Long
+    val hrMC: Long,
+    val synced: Boolean = false
 )

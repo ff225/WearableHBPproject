@@ -9,8 +9,11 @@ class HeartRateRepository(
 
     suspend fun getItem(id: Int): HeartRateAggregateEntity = heartDao.getItem(id)
 
-    suspend fun getItemByExternalId(uid: Int): HeartRateAggregateEntity? =
-        heartDao.getHRA_ByBP(uid)
+    suspend fun getItemByExternalId(uid: String): HeartRateAggregateEntity? =
+        heartDao.getHRAFromFK(uid)
+
+    suspend fun getUnsyncedItems(): List<HeartRateAggregateEntity> =
+        heartDao.getItemsUnsynced()
 
     suspend fun getItems(): List<HeartRateAggregateEntity> = heartDao.getAllHRA()
 
