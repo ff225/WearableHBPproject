@@ -124,28 +124,29 @@ suspend fun readBloodPressure(
 
         response.records.forEach {
 
-            val locationEntity = locationRepository.getLocationForMeasurement(it.time.toDate())
+            val time = it.time.truncatedTo(ChronoUnit.DAYS).toEpochMilli()
+            val locationEntity =
+                locationRepository.getLocationForMeasurement(
+                    time
+                )
 
-            // get from repository using getLocationForMeasurement
             Log.d("GetDataFromHC", "Reading blood pressure record: $it")
             bloodPressureRepo.insertItem(
                 BloodPressureEntity(
                     uid = it.metadata.id,
                     systolic = it.systolic.inMillimetersOfMercury,
                     diastolic = it.diastolic.inMillimetersOfMercury,
-                    time = it.time.toDate(),
+                    date = it.time.atZone(it.zoneOffset).truncatedTo(ChronoUnit.DAYS)
+                        .toEpochSecond(),
+                    time = it.time.toEpochMilli(),
                     timezone = it.zoneOffset?.totalSeconds ?: -1,
                     bodyPosition = it.bodyPosition,
                     measurementLocation = it.measurementLocation,
-                    description = "NA",
                     latitude = locationEntity?.latitude ?: -1.0,
                     longitude = locationEntity?.longitude ?: -1.0,
                     synced = false
-
-
                 )
             )
-
         }
         return response.records
     } catch (e: Exception) {

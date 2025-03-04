@@ -14,7 +14,8 @@ import com.google.android.gms.tasks.Task
 import it.unibo.alessiociarrocchi.tesiahc.WearableHBPApplication
 import it.unibo.alessiociarrocchi.tesiahc.data.model.LocationEntity
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.util.Date
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -50,8 +51,11 @@ class GetLatestLocation(ctx: Context, params: WorkerParameters) : CoroutineWorke
                         LocationEntity(
                             latitude = location.latitude,
                             longitude = location.longitude,
-                            mydate = Date(location.time)
-                        )
+                            date = Instant.ofEpochMilli(location.time).truncatedTo(ChronoUnit.DAYS)
+                                .toEpochMilli(),
+                            time = location.time,
+
+                            )
                     )
 
                 }
