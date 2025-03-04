@@ -24,23 +24,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.unibo.alessiociarrocchi.tesiahc.R
-import java.util.Date
+import it.unibo.alessiociarrocchi.tesiahc.convertToLocalDateViaMillisecond
+import java.time.ZoneId
+import java.util.TimeZone
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LocationRow(
     uid: Int,
-    date: Date,
+    date: Long,
     latitude: Double,
     longitude: Double,
-    onLongClik: (Int) -> Unit = {},
-){
-    val showAlertMessageLongClick = remember{mutableStateOf(false)}
+    onLongClick: (Int) -> Unit = {},
+) {
+    val showAlertMessageLongClick = remember { mutableStateOf(false) }
 
-    if (showAlertMessageLongClick.value){
+    if (showAlertMessageLongClick.value) {
         AlertDialog(
             onDismissRequest = {
-                showAlertMessageLongClick.value=false
+                showAlertMessageLongClick.value = false
             },
             title = {
                 Text(
@@ -59,8 +61,8 @@ fun LocationRow(
                 TextButton(
                     onClick = {
                         //Log.d("Delete dialog", "Eccomi con id:" + uid.toString())
-                        onLongClik(uid)
-                        showAlertMessageLongClick.value=false
+                        onLongClick(uid)
+                        showAlertMessageLongClick.value = false
                     }) {
                     Text("Sì", style = TextStyle(color = Color.Black))
                 }
@@ -68,7 +70,7 @@ fun LocationRow(
             dismissButton = {
                 TextButton(
                     onClick = {
-                        showAlertMessageLongClick.value=false
+                        showAlertMessageLongClick.value = false
                     }) {
                     Text("No", style = TextStyle(color = Color.Black))
                 }
@@ -77,27 +79,32 @@ fun LocationRow(
     }
 
     Row(
-        modifier = Modifier.combinedClickable(
-            onClick = {},
-            onLongClick = {
-                showAlertMessageLongClick.value=true
-            })
+        modifier = Modifier
+            .combinedClickable(
+                onClick = {},
+                onLongClick = {
+                    showAlertMessageLongClick.value = true
+                })
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-        ){
+        ) {
+            Log.d("LocationRow", "${TimeZone.getTimeZone(ZoneId.systemDefault()).rawOffset}")
             Text(
                 color = MaterialTheme.colors.primary,
-                text = date.toString(),
+                text = convertToLocalDateViaMillisecond(
+                    date,
+                    TimeZone.getTimeZone(ZoneId.systemDefault()).rawOffset / 1000
+                ).toString(),
                 style = MaterialTheme.typography.caption
             )
-            Text(stringResource(id= R.string.latitudine) + ": " + latitude.toString())
-            Text(stringResource(id= R.string.longitudine) + ": " + longitude.toString())
+            Text(stringResource(id = R.string.latitudine) + ": " + latitude.toString())
+            Text(stringResource(id = R.string.longitudine) + ": " + longitude.toString())
         }
     }
 
