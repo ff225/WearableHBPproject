@@ -2,7 +2,6 @@ package it.unibo.alessiociarrocchi.tesiahc.data.repository
 
 import it.unibo.alessiociarrocchi.tesiahc.data.dao.LocationDao
 import it.unibo.alessiociarrocchi.tesiahc.data.model.LocationEntity
-import it.unibo.alessiociarrocchi.tesiahc.toDate
 import java.util.Date
 
 
@@ -11,20 +10,21 @@ class LocationRepository(
 ) {
 
 
-    suspend fun getLocationsToday(today: String): List<LocationEntity> {
-        return locationDao.getLocationsToday(today.toDate())
+    suspend fun getLocationsToday(today: Long): List<LocationEntity> {
+        return locationDao.getLocationsToday(today)
     }
 
+    /*
     suspend fun getLocationsDates(dataInizio: String, dataFine: String): List<LocationEntity> {
         return locationDao.getLocationsDates(dataInizio.toDate(), dataFine.toDate())
-    }
+    }*/
 
     suspend fun getLocation(id: Int): LocationEntity = locationDao.getLocation(id)
 
     suspend fun getLastLocation(): LocationEntity = locationDao.getLastLocation()
 
-    suspend fun getLocationForMeasurement(data: Date): LocationEntity? {
-        return locationDao.getLocationForMeasurement(data)
+    suspend fun getLocationForMeasurement(date: Long): LocationEntity? {
+        return locationDao.getLocationForMeasurement(date)
     }
 
     suspend fun deleteLocation(id: Int) {

@@ -3,7 +3,6 @@ package it.unibo.alessiociarrocchi.tesiahc.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Date
 
 @Entity(tableName = "my_location_table")
 data class LocationEntity(
@@ -13,12 +12,14 @@ data class LocationEntity(
     val id: Int = 0,
 
     @ColumnInfo(name = "latitude")
-    val latitude: Double = 0.0,
+    val latitude: Double = -1.0,
 
     @ColumnInfo(name = "longitude")
-    val longitude: Double = 0.0,
+    val longitude: Double = -1.0,
 
-    @ColumnInfo(name = "mydate")
-    val mydate: Date = Date()
+    @ColumnInfo(name = "date")
+    val date: Long,
+    @ColumnInfo(name = "time")
+    val time: Long
 )
 
