@@ -1,55 +1,67 @@
 package it.unibo.alessiociarrocchi.tesiahc.presentation.screen.bloodpressure
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import it.unibo.alessiociarrocchi.tesiahc.data.MyBloodPressureRepository
-import it.unibo.alessiociarrocchi.tesiahc.data.MySettingsRepository
-import it.unibo.alessiociarrocchi.tesiahc.data.db.GetKey_FilterDataFine
-import it.unibo.alessiociarrocchi.tesiahc.data.db.GetKey_FilterDataInzio
-import it.unibo.alessiociarrocchi.tesiahc.data.db.MyBloodPressureEntity
+import it.unibo.alessiociarrocchi.tesiahc.data.model.BloodPressureEntity
+import it.unibo.alessiociarrocchi.tesiahc.data.repository.BloodPressureRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.repository.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.util.TimeZone
 
 class BloodPressureViewModel(
-    private val myBPRepository: MyBloodPressureRepository,
-    private val mySettRepository: MySettingsRepository
+    bloodPressureRepository: BloodPressureRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _bpList = MutableStateFlow(emptyList<MyBloodPressureEntity>())
+    private var _bpList: MutableStateFlow<List<BloodPressureEntity>> = MutableStateFlow(emptyList())
     val bpList = _bpList.asStateFlow()
-    private var _currDate = ""
-    private var _currDateFilters = ""
 
-    fun initialLoad() {
-        val sdf = SimpleDateFormat("yyyy-MM-dd")
-        _currDate = sdf.format(Date())
 
-        refreshList()
+    init {
+        // work with timestamp instead of Date
+        //val sdf = SimpleDateFormat("yyyy-MM-dd")
+        //_currDate = sdf.format(Date())
+        //Log.d("BloodPressureViewModel", "currDate: $_currDate")
+        val date =
+            Instant.now().atZone(TimeZone.getDefault().toZoneId()).truncatedTo(ChronoUnit.DAYS)
+                .toEpochSecond()
+
+        Log.d("BloodPressureViewModel", "date: $date")
+        viewModelScope.launch {
+            bloodPressureRepository.getItemsToday(
+                Instant.now().atZone(TimeZone.getDefault().toZoneId()).truncatedTo(ChronoUnit.DAYS)
+                    .toEpochSecond()
+            ).let {
+                _bpList.value = it
+            }
+        }
     }
+}
 
-    private fun refreshList(){
-        if (_currDateFilters.isNotEmpty()){
+/*
+    private fun refreshList() {
+        if (_currDateFilters.isNotEmpty()) {
             val dataInizio = _currDateFilters.substringBefore('|').trim()
             val dataFine = _currDateFilters.substringAfter('|').trim()
-            if(dataFine.isNotEmpty()){
+            if (dataFine.isNotEmpty()) {
                 viewModelScope.launch {
                     _bpList.value = myBPRepository.getItemsByDates(dataInizio, dataFine)
                 }
-            }
-            else{
+            } else {
                 getFiltersOrToday()
             }
-        }
-        else{
+        } else {
             getFiltersOrToday()
         }
-    }
+    }*/
+/*
+    private fun getFiltersOrToday() {
 
-    private fun getFiltersOrToday(){
         var dfi = mySettRepository.getItem(GetKey_FilterDataInzio())
         if (dfi != null){
             if(dfi.valore != ""){
@@ -65,32 +77,20 @@ class BloodPressureViewModel(
                 refreshWithFilters(myout)
                 return
             }
+
+
         }
 
         viewModelScope.launch {
             _bpList.value = myBPRepository.getItemsToday(_currDate)
         }
-    }
 
-    fun refreshWithFilters(dates:String){
-        _currDateFilters = dates
-        refreshList()
-    }
 
+    }
+*/
+/*
+fun refreshWithFilters(dates: String) {
+_currDateFilters = dates
+//refreshList()
 }
-
-class BloodPressureViewModelFactory(
-    private val myBPRepository: MyBloodPressureRepository,
-    private val mySettRepository: MySettingsRepository,
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(BloodPressureViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return BloodPressureViewModel(
-                myBPRepository = myBPRepository,
-                mySettRepository = mySettRepository
-            ) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+*/
