@@ -27,9 +27,11 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.HomeScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.MyScaffold
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.PermissionScreen
@@ -105,7 +107,12 @@ class MainActivity : ComponentActivity() {
                     composable(BloodPressureScreen.route) {
                         BloodPressureScreen(navController)
                     }
-                    composable(BloodPressureDetailScreen.route) {
+                    composable(
+                        BloodPressureDetailScreen.routeWithArgs,
+                        arguments = listOf(navArgument(BloodPressureDetailScreen.itemIdArg) {
+                            type = NavType.IntType
+                        })
+                    ) {
                         BloodPressureDetailScreen(navController)
                     }
                     composable(LocationScreen.route) {
