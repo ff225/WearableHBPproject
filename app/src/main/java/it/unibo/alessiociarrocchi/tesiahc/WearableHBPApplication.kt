@@ -18,7 +18,7 @@ import androidx.work.WorkManager
 import it.unibo.alessiociarrocchi.tesiahc.data.AppContainerImpl
 import it.unibo.alessiociarrocchi.tesiahc.worker.GetDataFromHC
 import it.unibo.alessiociarrocchi.tesiahc.worker.GetLatestLocation
-import it.unibo.alessiociarrocchi.tesiahc.worker.SendDataToFirebase
+import it.unibo.alessiociarrocchi.tesiahc.worker.SendDataToIPFS
 import java.util.concurrent.TimeUnit
 
 
@@ -98,7 +98,7 @@ fun setupPeriodicWork(workManager: WorkManager) {
             .addTag("PeriodicGetCurrentLocation").build()
 
     val periodicSendDataToFirebase: PeriodicWorkRequest =
-        PeriodicWorkRequest.Builder(SendDataToFirebase::class.java, 30, TimeUnit.MINUTES)
+        PeriodicWorkRequest.Builder(SendDataToIPFS::class.java, 30, TimeUnit.MINUTES)
             .addTag("PeriodicSendDataToFirebase").build()
 
     workManager.enqueueUniquePeriodicWork(

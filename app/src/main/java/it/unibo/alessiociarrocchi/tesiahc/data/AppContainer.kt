@@ -1,9 +1,10 @@
 package it.unibo.alessiociarrocchi.tesiahc.data
 
 import android.content.Context
-import it.unibo.alessiociarrocchi.tesiahc.data.repository.HeartRateRepository
-import it.unibo.alessiociarrocchi.tesiahc.data.repository.LocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.repository.BloodPressureRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.repository.HeartRateRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.repository.IPFSRepository
+import it.unibo.alessiociarrocchi.tesiahc.data.repository.LocationRepository
 import it.unibo.alessiociarrocchi.tesiahc.data.repository.SettingsRepository
 
 
@@ -17,6 +18,7 @@ interface AppContainer {
     val heartRateRepository: HeartRateRepository
     val locationRepository: LocationRepository
     val bloodPressureRepository: BloodPressureRepository
+    val ipfsRepository: IPFSRepository
 
 }
 
@@ -32,5 +34,8 @@ class AppContainerImpl(context: Context) : AppContainer {
     }
     override val bloodPressureRepository: BloodPressureRepository by lazy {
         BloodPressureRepository(LocalDatabase.getDatabase(context).bloodPressureDao())
+    }
+    override val ipfsRepository: IPFSRepository by lazy {
+        IPFSRepository(LocalDatabase.getDatabase(context).ipfsDao())
     }
 }

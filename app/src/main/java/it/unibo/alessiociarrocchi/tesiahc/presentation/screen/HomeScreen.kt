@@ -17,7 +17,7 @@ import androidx.work.WorkRequest
 import it.unibo.alessiociarrocchi.tesiahc.presentation.RouteDestination
 import it.unibo.alessiociarrocchi.tesiahc.worker.GetDataFromHC
 import it.unibo.alessiociarrocchi.tesiahc.worker.GetLatestLocation
-import it.unibo.alessiociarrocchi.tesiahc.worker.SendDataToFirebase
+import it.unibo.alessiociarrocchi.tesiahc.worker.SendDataToIPFS
 
 object HomeScreen : RouteDestination {
     override val route: String = "home_screen"
@@ -53,8 +53,8 @@ fun HomeScreen(navController: NavController? = null) {
                         .build()
 
                 val sendDataToFirebase: WorkRequest =
-                    OneTimeWorkRequest.Builder(SendDataToFirebase::class.java)
-                        .addTag("sendDataToFirebase")
+                    OneTimeWorkRequest.Builder(SendDataToIPFS::class.java)
+                        .addTag("sendDataToIPFS")
                         .build()
 
                 WorkManager.getInstance(context).enqueue(

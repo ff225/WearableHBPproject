@@ -1,13 +1,19 @@
 package it.unibo.alessiociarrocchi.tesiahc.worker
 
 import android.content.Context
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import com.google.firebase.initialize
 import com.google.firebase.installations.FirebaseInstallations
+import it.unibo.alessiociarrocchi.tesiahc.RetrofitAPI
 import it.unibo.alessiociarrocchi.tesiahc.WearableHBPApplication
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import org.json.JSONObject
 
 class SendDataToFirebase(ctx: Context, workParams: WorkerParameters) :
     CoroutineWorker(ctx, workParams) {
@@ -20,6 +26,28 @@ class SendDataToFirebase(ctx: Context, workParams: WorkerParameters) :
         (ctx as WearableHBPApplication).appContainer.heartRateRepository
 
     override suspend fun doWork(): Result {
+
+        Log.d(
+            "GET- SendData",
+            RetrofitAPI.retrofitService.getData("Qmc8v7rbuejvAPtcN8V2AVZFqL9hsWNShAhPxa9j1YEo28")
+        )
+        val jsonObject = JSONObject().apply {
+            put("chiave1", "valore1")
+            put("chiave2", "valore2")
+        }
+        val jsonString = jsonObject.toString()
+
+        // Creazione del RequestBody direttamente dalla stringa JSON
+        val requestBody = RequestBody.create(MediaType.parse("application/json"), jsonString)
+
+        // Creazione della parte Multipart senza file fisico
+        val jsonPart = MultipartBody.Part.createFormData("file", "temp.json", requestBody)
+
+        // Invio del file
+        Log.d(
+            "POST - SendData",
+            RetrofitAPI.retrofitService.addData(jsonPart)
+        )
 
         Firebase.initialize(applicationContext)
         val firebaseInstallation = FirebaseInstallations.getInstance().id.await()
