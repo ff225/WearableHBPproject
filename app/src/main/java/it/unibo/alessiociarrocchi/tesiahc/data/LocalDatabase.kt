@@ -7,10 +7,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import it.unibo.alessiociarrocchi.tesiahc.data.dao.BloodPressureDao
 import it.unibo.alessiociarrocchi.tesiahc.data.dao.HeartRateAggregateDao
+import it.unibo.alessiociarrocchi.tesiahc.data.dao.IPFSDao
 import it.unibo.alessiociarrocchi.tesiahc.data.dao.LocationDao
 import it.unibo.alessiociarrocchi.tesiahc.data.dao.SettingsDao
 import it.unibo.alessiociarrocchi.tesiahc.data.model.BloodPressureEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.model.HeartRateAggregateEntity
+import it.unibo.alessiociarrocchi.tesiahc.data.model.IPFSEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.model.LocationEntity
 import it.unibo.alessiociarrocchi.tesiahc.data.model.MySettingsEntity
 
@@ -23,6 +25,7 @@ private const val DATABASE_NAME = "tesiahc_database"
         HeartRateAggregateEntity::class,
         LocationEntity::class,
         MySettingsEntity::class,
+        IPFSEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -34,6 +37,7 @@ abstract class LocalDatabase : RoomDatabase() {
     abstract fun heartRateAggregateDao(): HeartRateAggregateDao
     abstract fun locationDao(): LocationDao
     abstract fun settingsDao(): SettingsDao
+    abstract fun ipfsDao(): IPFSDao
 
     companion object {
         @Volatile
