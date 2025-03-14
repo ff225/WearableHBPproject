@@ -32,6 +32,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.work.WorkManager
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.HomeScreen
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.MyScaffold
 import it.unibo.alessiociarrocchi.tesiahc.presentation.screen.PermissionScreen
@@ -164,6 +165,7 @@ suspend fun checkPermissionsAndRun(
         ) == PackageManager.PERMISSION_GRANTED
     ) {
 
+        setupPeriodicWork(workManager = WorkManager.getInstance(context))
         navController?.navigate(HomeScreen.route)
         {
             popUpTo("splash_screen") {
