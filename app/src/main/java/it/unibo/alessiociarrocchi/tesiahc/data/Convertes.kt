@@ -1,4 +1,4 @@
-package it.unibo.alessiociarrocchi.tesiahc.data.db
+package it.unibo.alessiociarrocchi.tesiahc.data
 
 import androidx.room.TypeConverter
 import java.util.Date
