@@ -3,9 +3,10 @@ package it.unibo.alessiociarrocchi.tesiahc.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.google.firebase.database.ktx.database
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import com.google.firebase.initialize
 import com.google.firebase.installations.FirebaseInstallations
-import com.google.firebase.ktx.Firebase
 import it.unibo.alessiociarrocchi.tesiahc.WearableHBPApplication
 
 class SendDataToFirebase(ctx: Context, workParams: WorkerParameters) :
@@ -20,6 +21,7 @@ class SendDataToFirebase(ctx: Context, workParams: WorkerParameters) :
 
     override suspend fun doWork(): Result {
 
+        Firebase.initialize(applicationContext)
         val firebaseInstallation = FirebaseInstallations.getInstance().id.await()
 
         bloodPressureRepository.getItemsUnsynced().forEach { bloodPressureData ->
@@ -33,6 +35,7 @@ class SendDataToFirebase(ctx: Context, workParams: WorkerParameters) :
                         "systolic" to bloodPressureData.systolic,
                         "diastolic" to bloodPressureData.diastolic,
                         "description" to bloodPressureData.description,
+                        "bodyPosition" to bloodPressureData.bodyPosition,
                         "latitude" to bloodPressureData.latitude,
                         "longitude" to bloodPressureData.longitude,
                     )
