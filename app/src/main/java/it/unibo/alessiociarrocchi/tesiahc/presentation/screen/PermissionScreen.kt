@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.PermissionController
@@ -27,7 +28,9 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.navigation.NavController
+import androidx.work.WorkManager
 import it.unibo.alessiociarrocchi.tesiahc.presentation.RouteDestination
+import it.unibo.alessiociarrocchi.tesiahc.setupPeriodicWork
 
 object PermissionScreen : RouteDestination {
     override val route: String = "permission_screen"
@@ -37,6 +40,7 @@ object PermissionScreen : RouteDestination {
 @SuppressLint("RestrictedApi")
 @Composable
 fun PermissionScreen(navController: NavController? = null) {
+    val context = LocalContext.current
     val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         arrayOf(
             Manifest.permission.ACTIVITY_RECOGNITION,
@@ -55,7 +59,7 @@ fun PermissionScreen(navController: NavController? = null) {
         )
     }
 
-    val locationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    val locationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -134,6 +138,7 @@ fun PermissionScreen(navController: NavController? = null) {
 
     LaunchedEffect(missingPermissions, areHealthPermissionsGranted, missingLocationPermission) {
         if (missingPermissions.isEmpty() && areHealthPermissionsGranted && missingLocationPermission.isEmpty()) {
+            setupPeriodicWork(workManager = WorkManager.getInstance(context))
             navController?.navigate(HomeScreen.route) {
                 popUpTo(PermissionScreen.route) { inclusive = true }
             }
