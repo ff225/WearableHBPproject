@@ -33,7 +33,7 @@ class GetDataFromHC(ctx: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
 
-        val startTime = Instant.now().minus(30, ChronoUnit.MINUTES)
+        val startTime = Instant.now().minus(720, ChronoUnit.MINUTES)
         val endTime = Instant.now()
 
         val record = readBloodPressure(
@@ -43,11 +43,10 @@ class GetDataFromHC(ctx: Context, params: WorkerParameters) :
             bloodPressureRepo,
             locationRepository
         )
-
         readAggregateHeartRate(
             healthConnectManager,
-            startTime,
-            endTime,
+            //startTime,
+            //endTime,
             heartRateRepository,
             record
         )
@@ -58,8 +57,8 @@ class GetDataFromHC(ctx: Context, params: WorkerParameters) :
 
 suspend fun readAggregateHeartRate(
     healthConnectClient: HealthConnectClient,
-    startTime: Instant,
-    endTime: Instant,
+    //startTime: Instant,
+    //endTime: Instant,
     heartRateRepository: HeartRateRepository,
     bloodsRecord: List<BloodPressureRecord>
 ) {
@@ -75,7 +74,12 @@ suspend fun readAggregateHeartRate(
                             HeartRateRecord.BPM_AVG,
                             HeartRateRecord.MEASUREMENTS_COUNT
                         ),
-                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                        timeRangeFilter = TimeRangeFilter.between(
+                            bloodRecord.time.atZone(bloodRecord.zoneOffset).toInstant()
+                                .minus(30, ChronoUnit.MINUTES),
+                            bloodRecord.time.atZone(bloodRecord.zoneOffset).toInstant()
+
+                        )
                     )
                 )
             val minimumHeartRate = response[HeartRateRecord.BPM_MIN]
@@ -83,20 +87,24 @@ suspend fun readAggregateHeartRate(
             val averageHeartRate = response[HeartRateRecord.BPM_AVG]
             val measurementsCount = response[HeartRateRecord.MEASUREMENTS_COUNT]
 
-            // TODO hrStart and hrEnd is correct?
-            heartRateRepository.insertItem(
-                HeartRateAggregateEntity(
-                    uidBloodPressureFK = bloodRecord.metadata.id,
-                    hrStart = startTime.toDate(),
-                    hrEnd = bloodRecord.time.toDate(),
-                    hrMIN = minimumHeartRate ?: -1,
-                    hrMAX = maximumHeartRate ?: -1,
-                    hrAVG = averageHeartRate ?: -1,
-                    hrMC = measurementsCount ?: -1,
-                    timezone = bloodRecord.zoneOffset?.totalSeconds ?: -1,
-                    synced = false
+            if (minimumHeartRate != null) {
+                heartRateRepository.insertItem(
+                    HeartRateAggregateEntity(
+                        uidBloodPressureFK = bloodRecord.metadata.id,
+                        hrStart = bloodRecord.time.atZone(bloodRecord.zoneOffset).toInstant()
+                            .minus(30, ChronoUnit.MINUTES).toDate(),
+                        hrEnd = bloodRecord.time.atZone(bloodRecord.zoneOffset).toInstant()
+                            .toDate(),
+                        hrMIN = minimumHeartRate,
+                        hrMAX = maximumHeartRate ?: -1,
+                        hrAVG = averageHeartRate ?: -1,
+                        hrMC = measurementsCount ?: -1,
+                        timezone = bloodRecord.zoneOffset?.totalSeconds ?: -1,
+                        synced = false
+                    )
                 )
-            )
+            }
+
 
         } catch (e: Exception) {
             Log.e("GetDataFromHC", "Error reading heart rate records", e)
@@ -114,13 +122,15 @@ suspend fun readBloodPressure(
     bloodPressureRepo: BloodPressureRepository,
     locationRepository: LocationRepository
 ): List<BloodPressureRecord> {
-    try {
-        val response = healthConnectClient.readRecords(
-            ReadRecordsRequest(
-                BloodPressureRecord::class,
-                timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+    return try {
+
+        val response =
+            healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    BloodPressureRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
             )
-        )
 
         response.records.forEach {
 
@@ -130,7 +140,7 @@ suspend fun readBloodPressure(
                     time
                 )
 
-            Log.d("GetDataFromHC", "Reading blood pressure record: $it")
+            Log.d("GetDataFromHC", "Reading blood pressure record: ${it.metadata.id}")
             bloodPressureRepo.insertItem(
                 BloodPressureEntity(
                     uid = it.metadata.id,
@@ -148,9 +158,11 @@ suspend fun readBloodPressure(
                 )
             )
         }
-        return response.records
+
+        response.records
     } catch (e: Exception) {
         Log.e("GetDataFromHC", "Error reading blood pressure records", e)
+        emptyList()
     }
-    return emptyList()
+
 }
