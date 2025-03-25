@@ -2,16 +2,16 @@ package it.unibo.alessiociarrocchi.tesiahc.worker
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import it.unibo.alessiociarrocchi.tesiahc.BuildConfig
 import it.unibo.alessiociarrocchi.tesiahc.RetrofitAPI
 import it.unibo.alessiociarrocchi.tesiahc.WearableHBPApplication
 import it.unibo.alessiociarrocchi.tesiahc.data.model.IPFSEntity
 import okhttp3.MediaType
-import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.json.JSONObject
+import retrofit2.awaitResponse
 
 class SendDataToIPFS(ctx: Context, workParams: WorkerParameters) :
     CoroutineWorker(ctx, workParams) {
@@ -24,6 +24,8 @@ class SendDataToIPFS(ctx: Context, workParams: WorkerParameters) :
     private val ipfsRepository = (ctx as WearableHBPApplication).appContainer.ipfsRepository
 
     override suspend fun doWork(): Result {
+
+        println(RetrofitAPI.retrofitService.testAuthentication(" Bearer ${BuildConfig.PINATA_TOKEN}"))
 
         bloodPressureRepository.getItemsUnsynced().forEach { bloodPressureData ->
             val jsonObject = JSONObject().apply {
@@ -55,36 +57,33 @@ class SendDataToIPFS(ctx: Context, workParams: WorkerParameters) :
                     }
                 }
             }
+
             val jsonString = jsonObject.toString()
 
-            val requestBody = RequestBody.create(MediaType.parse("application/json"), jsonString)
 
-            val jsonPart = MultipartBody.Part.createFormData(
-                "file",
-                "${bloodPressureData.uid}.json",
-                requestBody
+            val response = RetrofitAPI.retrofitService.pinJsonToIPFS(
+                "Bearer ${BuildConfig.PINATA_TOKEN}",
+                RequestBody.create(MediaType.parse("application/json"), JSONObject().apply {
+                    put("pinataOptions", JSONObject().apply {
+                        put("cidVersion", 1)
+                    })
+                    put("pinataMetadata", JSONObject().apply {
+                        put("name", "${bloodPressureData.uid}.json")
+                    })
+                    put("pinataContent", jsonObject)
+                }.toString())
             )
 
-            val response = RetrofitAPI.retrofitService.addData(jsonPart)
 
-            Log.d(
-                "POST - SendData",
-                response
-            )
+            val result = response.awaitResponse()
 
-            response.let { responseBody ->
-                try {
-                    val jsonObject = JSONObject(responseBody)
-                    val name = jsonObject.getString("Name")
-                    val hash = jsonObject.getString("Hash")
-
-                    ipfsRepository.addData(IPFSEntity(name = name, cid = hash))
+            if (result.isSuccessful)
+                result.body()?.let {
+                    val jsonObject = JSONObject(it.string())
+                    val hash = jsonObject.getString("IpfsHash")
+                    ipfsRepository.addData(IPFSEntity(name = bloodPressureData.uid, cid = hash))
                     bloodPressureRepository.updateItem(bloodPressureData.copy(synced = true))
-                } catch (e: Exception) {
-                    Log.e("POST - SendData", e.message.toString())
                 }
-            }
-
         }
 
         return Result.success()
