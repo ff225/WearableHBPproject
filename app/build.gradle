@@ -5,20 +5,35 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+def localProperties = new File(rootProject.projectDir, "local.properties")
+def properties = new Properties()
+
+if (localProperties.exists()) {
+    localProperties.withInputStream { properties.load(it) }
+}
+
 android {
-    compileSdk 34
-    namespace 'it.unibo.alessiociarrocchi.tesiahc'
+    compileSdk  34
+    namespace  "it.unibo.alessiociarrocchi.tesiahc"
+
+    buildFeatures{
+        buildConfig true
+    }
 
     defaultConfig {
-        applicationId 'it.unibo.alessiociarrocchi.tesiahc'
+        applicationId "it.unibo.alessiociarrocchi.tesiahc"
         minSdk 26
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        targetSdk  34
+        versionCode  1
+        versionName  "1.0"
+
+        buildConfigField "String", "PINATA_GATEWAY", "\"${properties.getProperty("PINATA_GATEWAY", "")}\""
+        buildConfigField "String", "PINATA_TOKEN", "\"${properties.getProperty("PINATA_TOKEN", "")}\""
 
         vectorDrawables {
             useSupportLibrary true
         }
+
     }
 
     buildTypes {
@@ -37,7 +52,7 @@ android {
         freeCompilerArgs = ['-Xjvm-default=all-compatibility']
     }
     buildFeatures {
-        compose true
+        compose=true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
