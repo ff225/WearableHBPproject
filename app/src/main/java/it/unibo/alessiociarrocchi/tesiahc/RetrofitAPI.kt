@@ -12,6 +12,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 private const val BASE_URL =
@@ -21,6 +22,9 @@ private val retrofit = Retrofit.Builder().addConverterFactory(ScalarsConverterFa
     .baseUrl("https://api.pinata.cloud/")
     .build()
 
+private val retrofitIPFS = Retrofit.Builder().addConverterFactory(ScalarsConverterFactory.create())
+    .baseUrl(BASE_URL)
+    .build()
 
 interface ApiIpfs {
     @Multipart
@@ -40,10 +44,18 @@ interface ApiIpfs {
         @Header("Authorization") authHeader: String,
         @Body jsonBody: RequestBody
     ): Call<ResponseBody>
+
+    // GET data from IPFS
+    @GET("/ipfs/{cid}")
+    fun retrieveData(@Path("cid") cid: String): Call<ResponseBody>
 }
 
 object RetrofitAPI {
     val retrofitService: ApiIpfs by lazy {
         retrofit.create(ApiIpfs::class.java)
+    }
+
+    val retrofitRetrieveData: ApiIpfs by lazy {
+        retrofitIPFS.create(ApiIpfs::class.java)
     }
 }
