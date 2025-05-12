@@ -83,6 +83,12 @@ class SendDataToIPFS(ctx: Context, workParams: WorkerParameters) :
                     val hash = jsonObject.getString("IpfsHash")
                     ipfsRepository.addData(IPFSEntity(name = bloodPressureData.uid, cid = hash))
                     bloodPressureRepository.updateItem(bloodPressureData.copy(synced = true))
+
+                    val x = RetrofitAPI.retrofitRetrieveData.retrieveData(hash).awaitResponse()
+
+                    if (x.isSuccessful) {
+                        println(x.body()?.string())
+                    }
                 }
         }
 
