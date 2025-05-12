@@ -99,7 +99,7 @@ fun setupPeriodicWork(workManager: WorkManager) {
 
     val periodicSendDataToFirebase: PeriodicWorkRequest =
         PeriodicWorkRequest.Builder(SendDataToIPFS::class.java, 30, TimeUnit.MINUTES)
-            .addTag("PeriodicSendDataToFirebase").build()
+            .addTag("PeriodicSendDataToIPFS").build()
 
     workManager.enqueueUniquePeriodicWork(
         "getDataFromHC", ExistingPeriodicWorkPolicy.KEEP, periodicGetDataFromHC
@@ -109,8 +109,13 @@ fun setupPeriodicWork(workManager: WorkManager) {
         "getCurrentLocation", ExistingPeriodicWorkPolicy.KEEP, periodicGetCurrentLocationRequest
     )
 
+    /*
     workManager.enqueueUniquePeriodicWork(
         "sendDataToFirebase", ExistingPeriodicWorkPolicy.KEEP, periodicSendDataToFirebase
+    )*/
+
+    workManager.enqueueUniquePeriodicWork(
+        "PeriodicSendDataToIPFS", ExistingPeriodicWorkPolicy.KEEP, periodicSendDataToFirebase
     )
 
 }
