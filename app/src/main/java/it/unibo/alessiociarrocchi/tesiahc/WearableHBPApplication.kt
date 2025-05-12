@@ -115,7 +115,7 @@ fun setupPeriodicWork(workManager: WorkManager) {
     )*/
 
     workManager.enqueueUniquePeriodicWork(
-        "PeriodicSendDataToIPFS", ExistingPeriodicWorkPolicy.KEEP, periodicSendDataToFirebase
+        "sendDataToIPFS", ExistingPeriodicWorkPolicy.KEEP, periodicSendDataToFirebase
     )
 
 }
