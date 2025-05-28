@@ -55,30 +55,3 @@ class BloodPressureRepository(
     }
 
 }
-
-/* TODO remove
-fun updateBloodPressureDesc(
-    bpId: Int, description: String,
-    context: Context, scaffoldState: ScaffoldState, scope: CoroutineScope
-) {
-    if (bpId > 0) {
-        val bpRep =
-            MyBloodPressureRepository.getInstance(context, Executors.newSingleThreadExecutor())
-        val bpitem = bpRep.getItem(bpId)
-        if (bpitem != null) {
-            if (bpitem.description != description) {
-                bpitem.synced = 0
-            }
-            bpitem.description = description
-            bpRep.updateItem(bpitem)
-
-            showInfoSnackbar(scaffoldState, scope, "Info salvate correttamente")
-        } else {
-            showInfoSnackbar(scaffoldState, scope, "Misurazione non valida. Uscire e riprovare!")
-        }
-    } else {
-        showInfoSnackbar(scaffoldState, scope, "Errore id misurazione. Uscire e riprovare!")
-    }
-}
-
- */

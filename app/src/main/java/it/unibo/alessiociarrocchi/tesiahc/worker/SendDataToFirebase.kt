@@ -19,6 +19,15 @@ class SendDataToFirebase(ctx: Context, workParams: WorkerParameters) :
     private val heartRateRepository =
         (ctx as WearableHBPApplication).appContainer.heartRateRepository
 
+    private val stepsRepository =
+        (ctx as WearableHBPApplication).appContainer.stepsRepository
+
+    private val exerciseRepository =
+        (ctx as WearableHBPApplication).appContainer.exerciseRepository
+
+    private val bloodOxygenRepository =
+        (ctx as WearableHBPApplication).appContainer.boRepository
+
     override suspend fun doWork(): Result {
 
         Firebase.initialize(applicationContext)
@@ -59,7 +68,50 @@ class SendDataToFirebase(ctx: Context, workParams: WorkerParameters) :
             }
             bloodPressureRepository.updateItem(bloodPressureData.copy(synced = true))
         }
+        stepsRepository.getStepsUnsynced().forEach { stepsData ->
+            firebase.child("${firebaseInstallation}/steps").child(stepsData.uid)
+                .setValue(
+                    mapOf(
+                        "id" to stepsData.id,
+                        "uid" to stepsData.uid,
+                        "start_time" to stepsData.startTime,
+                        "start_time_zone" to stepsData.startTimeZone,
+                        "end_time" to stepsData.endTime,
+                        "end_time_zone" to stepsData.endTimeZone,
+                        "count" to stepsData.count,
+                    )
+                )
+            stepsRepository.updateItem(stepsData.copy(synced = true))
+        }
+        exerciseRepository.getExerciseUnsynced().forEach { exerciseData ->
+            firebase.child("${firebaseInstallation}/exercises").child(exerciseData.uid)
+                .setValue(
+                    mapOf(
+                        "id" to exerciseData.id,
+                        "uid" to exerciseData.uid,
+                        "start_time" to exerciseData.startTime,
+                        "start_time_zone" to exerciseData.startTimeZone,
+                        "end_time" to exerciseData.endTime,
+                        "end_time_zone" to exerciseData.endTimeZone,
+                        "exercise_type" to exerciseData.exerciseType,
+                    )
+                )
+            exerciseRepository.updateItem(exerciseData.copy(synced = true))
+        }
 
+        bloodOxygenRepository.getBOUnsynced().forEach { boData ->
+            firebase.child("${firebaseInstallation}/blood-oxygen").child(boData.uid)
+                .setValue(
+                    mapOf(
+                        "id" to boData.id,
+                        "uid" to boData.uid,
+                        "time" to boData.time,
+                        "time_zone" to boData.timeZone,
+                        "percentage" to boData.percentage,
+                    )
+                )
+            bloodOxygenRepository.updateItem(boData.copy(synced = true))
+        }
         return Result.success()
     }
 
