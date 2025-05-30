@@ -34,7 +34,7 @@ class SendDataToFirebase(ctx: Context, workParams: WorkerParameters) :
         val firebaseInstallation = FirebaseInstallations.getInstance().id.await()
 
         bloodPressureRepository.getItemsUnsynced().forEach { bloodPressureData ->
-            firebase.child(firebaseInstallation).child(bloodPressureData.uid)
+            firebase.child("${firebaseInstallation}/blood-pressure").child(bloodPressureData.uid)
                 .setValue(
                     mapOf(
                         "id" to bloodPressureData.id,
@@ -51,7 +51,7 @@ class SendDataToFirebase(ctx: Context, workParams: WorkerParameters) :
                 )
             heartRateRepository.getItemByExternalId(bloodPressureData.uid).let { heartRateData ->
                 heartRateData?.let {
-                    firebase.child(firebaseInstallation).child(bloodPressureData.uid)
+                    firebase.child("${firebaseInstallation}/blood-pressure").child(bloodPressureData.uid)
                         .updateChildren(
                             mapOf(
                                 "heartRate" to mapOf(
